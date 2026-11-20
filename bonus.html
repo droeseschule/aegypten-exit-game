@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2c1b14">
+<meta name="description" content="Bonusaufgabe: Interaktives Kreuzworträtsel zur Wiederholung des Ägypten-Exit-Games für Klasse 6">
+<title>Die letzte Herausforderung – Ägypten Exit-Game</title>
+<style>
+:root{--ink:#402a1c;--sand:#fff0d1;--gold:#ebaa36;--navy:#124b79;--blue:#146a9d;--success:#20725a;--danger:#ab3d32}
+*{box-sizing:border-box}
+html{background:#291a12;scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:"Trebuchet MS",Arial,sans-serif;background:radial-gradient(circle at 50% 0,#83502b 0,transparent 600px),repeating-linear-gradient(125deg,#2c1b14 0,#2c1b14 20px,#291810 21px,#291810 24px)}
+button,a{font:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #0e86cf;outline-offset:2px}
+[hidden],.hidden{display:none!important}
+.topline{height:8px;background:repeating-linear-gradient(90deg,#cf8831 0 31px,#12669a 32px 43px,#ffcc59 44px 62px,#12669a 63px 76px);border-bottom:2px solid #ffda77}
+.wrap{max-width:1120px;margin:auto;padding:13px 14px 44px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:11px 0 16px;color:#fff1d1}
+.logo{font-weight:1000;letter-spacing:.03em;font-size:clamp(14px,2.8vw,20px)}
+.header-pill{border:2px solid #f6c16a;background:#422b1c;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:900}
+.frame{background:#fff0d1;border:5px solid #ae6d29;border-radius:21px;box-shadow:0 0 0 2px #e0a749,0 15px 0 #160e0a,0 35px 60px #08040288;overflow:hidden;position:relative}
+.frame:before{content:"";position:absolute;inset:6px;z-index:2;border:2px solid #e2ad52;border-radius:11px;pointer-events:none}
+.body{padding:clamp(16px,3.3vw,33px);background:radial-gradient(circle at 95% -35%,#fce0a4,transparent 50%),repeating-linear-gradient(0deg,#fff4dc 0,#fff4dc 39px,#fff0d4 40px)}
+.stage{font-size:12px;letter-spacing:.15em;font-weight:1000;color:#956119;margin:0 0 8px;text-transform:uppercase}
+h1{font-size:clamp(26px,4vw,43px);margin:0 0 12px;line-height:1.15;color:#663b18}
+h2{font-size:clamp(21px,3vw,28px);color:#663b18}
+p{line-height:1.55}
+.intro{max-width:850px;margin:5px 0 17px;font-size:16px}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0 17px}
+.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;gap:8px;min-height:49px;padding:11px 18px;border-radius:13px;font-weight:1000;font-size:15px;text-decoration:none;box-shadow:0 3px 0 #79441e}
+.btn-primary{color:#3d250c;background:linear-gradient(#ffdf7b,#e8a12a);border:3px solid #9f5e19}
+.btn-blue{color:#fff;background:linear-gradient(#257bb6,#0e5689);border:3px solid #174364;box-shadow:0 3px 0 #0c3450}
+.btn-light{color:#674721;background:#fff9e9;border:2px solid #b78c4d;box-shadow:0 3px 0 #ba9a70}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #79441e}
+.notice{background:#fffaf0;padding:12px 15px;border-left:6px solid #db9b31;border-radius:5px 12px 12px 5px;margin:13px 0;line-height:1.5}
+.progressline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-weight:900;color:#124b79;margin:6px 0 12px}
+.progressbar{width:190px;max-width:100%;height:12px;background:#e4cb9a;border-radius:99px;overflow:hidden;border:1px solid #b38b50}
+.progressbar span{height:100%;width:0;display:block;background:#328769;transition:width .2s}
+.game-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.grid-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:3px 4px 14px}
+.crossword{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));width:100%;max-width:660px;min-width:504px;margin:auto;border:3px solid #754d29;background:#a68c69;box-shadow:0 4px 0 #b99662;user-select:none}
+.cell{position:relative;aspect-ratio:1;min-width:0;border:1px solid #c4b5a3;background:white}
+.cell.block{background:#ecdfc8;border-color:#e2d3ba}
+.cell.active{background:#ffecae}
+.cell.selected{background:#ffe077;outline:2px solid #176d9d;outline-offset:-2px;z-index:1}
+.cell.wrong{background:#ffe0db}
+.cell input{display:block;width:100%;height:100%;border:0;background:transparent;text-align:center;font:bold clamp(13px,2.4vw,23px) "Trebuchet MS",Arial,sans-serif;color:#203a48;padding:6px 0 0;border-radius:0;text-transform:uppercase;caret-color:#0a6b9b}
+.cell input:focus{outline:none}
+.cell .n{position:absolute;left:2px;top:1px;font-size:clamp(7px,1vw,10px);font-weight:1000;color:#75451e;pointer-events:none;z-index:1}
+.wordpanel{margin:0 auto;max-width:900px}
+.cluecolumns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:20px 0 4px}
+.cluecolumns h2{font-size:18px;border-bottom:2px solid #cc922e;padding-bottom:7px;margin:0 0 9px}
+.clue{width:100%;display:block;background:rgba(255,255,255,.68);text-align:left;border:2px solid #e4c79a;border-radius:10px;color:#493024;padding:9px 10px;line-height:1.4;font-size:14px;margin:6px 0;cursor:pointer}
+.clue strong{color:#126097}
+.clue.active{background:#fff0bc;border-color:#1b78a8;box-shadow:0 0 0 1px #1b78a8}
+.clue.done{border-left:5px solid #3a926a}
+#feedback{padding:12px 14px;margin:13px 0;border-radius:12px;border:2px solid #bda77c;background:#fff9eb;line-height:1.5;font-weight:800}
+#feedback.bad{border-color:#b46558;background:#ffebe7}
+#feedback.good{border-color:#77b18f;background:#edf9ef}
+.helper-overlay{position:fixed;inset:0;background:rgba(19,12,8,.78);z-index:30;display:flex;justify-content:center;align-items:center;padding:16px}
+.helper-card{background:#fff7e7;color:#4b3020;border:5px solid #d29a42;border-radius:20px;max-width:730px;max-height:min(90vh,880px);overflow:auto;width:100%;padding:20px 24px;box-shadow:0 14px 45px #0007}
+.helper-card h2{margin:3px 0 8px}
+.wordbank{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:16px 0}
+.wordbank span{display:block;text-align:center;padding:10px 5px;border:1px solid #d6bd91;border-radius:8px;background:white;font-weight:900;color:#164e70;font-size:clamp(11px,1.5vw,15px);overflow-wrap:anywhere}
+.victory img{width:100%;height:auto;display:block;aspect-ratio:1672/941;object-fit:contain;background:#96c9db}
+.victory .body{text-align:center}
+.victory .body p{max-width:700px;margin:0 auto 14px}
+.victory .actions{justify-content:center}
+.footer{text-align:center;color:#f0d4a4;font-size:12px;margin:24px 10px}
+@media(min-width:1050px){.crossword{min-width:0}.grid-scroll{overflow:visible}}
+@media(max-width:660px){.cluecolumns{grid-template-columns:1fr}.wordbank{grid-template-columns:repeat(2,minmax(0,1fr))}.actions{align-items:stretch}.actions .btn{flex:1}.grid-scroll{margin:0 -10px}.cell input{font-size:17px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="topline"></div>
+<main class="wrap">
+<header><div class="logo">𓂀 DAS GEHEIMNIS DER GRABKAMMER</div><div class="header-pill">BONUSAUFGABE · KLASSE 6</div></header>
+<section class="frame" id="game" aria-label="Kreuzworträtsel als Bonusaufgabe">
+<div class="body">
+<p class="stage">Geschafft! Nur noch eine letzte Herausforderung …</p>
+<h1>Das Geheimnis der Grabkammer</h1>
+<p class="intro"><strong>Bonusaufgabe:</strong> Was weißt du noch über das alte Ägypten? Löse das Kreuzworträtsel mit Begriffen aus allen vier Stationen. Wenn alle Wörter stimmen, erwartet dich eine Überraschung!</p>
+<div class="actions">
+<a class="btn btn-light" href="ausklang.html?seite=2">← Zurück zum Ausklang</a>
+<button type="button" class="btn btn-blue" id="help-open" aria-haspopup="dialog">💡 Hilfekarte öffnen</button>
+<button type="button" class="btn btn-light" id="check">✓ Wörter prüfen</button>
+</div>
+<div class="notice">Tippe auf eine <strong>Frage</strong> oder ein <strong>Feld</strong> und trage die Buchstaben ein. Tippst du erneut auf ein Kreuzungsfeld, kannst du zwischen waagerecht und senkrecht wechseln. Schreibe alle Antworten ohne Leerzeichen.</div>
+<div class="progressline"><span id="progress-text" aria-live="polite">0 von 20 Wörtern richtig</span><div class="progressbar" aria-hidden="true"><span id="progress-fill"></span></div></div>
+<div id="feedback" class="hidden" role="status" aria-live="polite"></div>
+<div class="game-layout">
+<div class="grid-scroll"><div class="crossword" id="crossword" role="group" aria-label="Kreuzworträtsel mit 18 Zeilen und 18 Spalten"></div></div>
+<div class="wordpanel">
+<div class="cluecolumns">
+<section><h2>Waagerecht →</h2><div id="clues-across"></div></section>
+<section><h2>Senkrecht ↓</h2><div id="clues-down"></div></section>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="frame victory hidden" id="victory" aria-live="polite" aria-label="Gewonnen – Glückwunsch">
+<img src="bonus-sieg.webp" alt="Der junge Forscher in ägyptischer Kleidung springt begeistert vor der Pyramide in die Luft." id="victory-image">
+<div class="body">
+<p class="stage">Alle vier Stationen und die Bonusaufgabe abgeschlossen</p>
+<h1>Großartig! Du hast es geschafft! 🎉</h1>
+<p>Du hast alle <strong>20 Begriffe</strong> richtig gelöst und dem jungen Forscher geholfen, die Geheimnisse der Grabkammer zu verstehen. Jetzt darf er vor Freude in die Luft springen!</p>
+<div class="actions"><button type="button" class="btn btn-light" id="back-to-grid">← Kreuzworträtsel ansehen</button><a href="index.html" class="btn btn-primary">↻ Exit-Game von vorne starten</a></div>
+</div>
+</section>
+<p class="footer">Geschichte · Klasse 6 · Ägypten-Exit-Game · Bonusaufgabe · Für iPads optimiert</p>
+</main>
+<div class="helper-overlay hidden" id="help-overlay" role="dialog" aria-modal="true" aria-labelledby="help-title">
+<div class="helper-card">
+<h2 id="help-title">💡 Hilfekarte · Wortbank</h2>
+<p>Hier findest du alle gesuchten Begriffe. Sie stehen <strong>nicht in der richtigen Reihenfolge</strong>. Suche zu jedem Hinweis das passende Wort.</p>
+<div class="wordbank" id="wordbank"></div>
+<button type="button" class="btn btn-primary" id="help-close">Zurück zum Kreuzworträtsel</button>
+</div>
+</div>
+<script>
+(function(){
+'use strict';
+const WORDS=[
+['MUMIFIZIERUNG',18,12,0,'So heißt die Behandlung, mit der ein toter Körper erhalten wurde.'],
+['FEDER',15,20,1,'Mit ihr wurde das Herz bei der Prüfung verglichen.'],
+['HAPI',15,15,1,'Dieser Schutzgott mit Paviankopf beschützte die Lunge.'],
+['SENET',16,23,1,'Ein Brettspiel, das man auch als Grabbeigabe fand.'],
+['KEBECHSENUEF',16,17,0,'Dieser Schutzgott mit Falkenkopf beschützte den Darm.'],
+['MAAT',18,12,1,'Göttin der Wahrheit und Gerechtigkeit. Ihre Feder lag auf der Waage.'],
+['HERZ',15,18,1,'Dieses Organ legte man beim Totengericht auf die Waage.'],
+['JENSEITS',15,27,1,'So heißt die Welt, in der die Toten weiterleben sollten.'],
+['LEINEN',11,25,1,'Aus diesem Stoff bestanden die Binden um eine Mumie.'],
+['OSIRIS',22,22,0,'Gott des Jenseits, der über die Toten richtete.'],
+['TOTENGERICHT',13,17,0,'Bei dieser Prüfung wurde das Herz der Toten gewogen.'],
+['AMSET',10,23,1,'Dieser Schutzgott mit Menschenkopf beschützte die Leber.'],
+['ANUBIS',20,12,0,'Gott mit Schakalkopf, der an der Waage stand.'],
+['AMULETT',11,22,0,'Ein kleiner Gegenstand, der seinen Besitzer schützen sollte.'],
+['USCHEBTI',7,17,1,'Eine kleine Dienerfigur, die im Jenseits arbeiten sollte.'],
+['MUMIE',7,16,0,'So nennt man den haltbar gemachten Körper eines Verstorbenen.'],
+['NATRON',19,25,1,'Mit diesem Salz trockneten die Ägypter den Körper aus.'],
+['GRABBEIGABEN',24,14,0,'So nennt man Gegenstände, die man Toten mit ins Grab gab.'],
+['DUAMUTEF',11,11,0,'Dieser Schutzgott mit Schakalkopf beschützte den Magen.'],
+['KANOPEN',10,13,1,'In diesen Gefäßen bewahrte man die entnommenen Organe auf.']
+];
+const $=id=>document.getElementById(id);
+const R=18,C=18,R0=7,C0=11;
+const words=WORDS.map(([text,r,c,dir,clue],id)=>({text,r:r-R0,c:c-C0,dir,clue,id,cells:[]}));
+const occupied=new Map();
+const starts=new Map();
+const wordStarts=words.map(w=>[w.r,w.c]);
+words.forEach(w=>{
+  const p=w.r*C+w.c;
+  if(!starts.has(p))starts.set(p,[]);
+  starts.get(p).push(w.id);
+  for(let i=0;i<w.text.length;i++){
+    const cell=(w.r+(w.dir?i:0))*C+w.c+(w.dir?0:i);
+    if(!occupied.has(cell))occupied.set(cell,{letter:w.text[i],words:[]});
+    else if(occupied.get(cell).letter!==w.text[i])throw Error('Fehler im Kreuzworträtsel!');
+    occupied.get(cell).words.push(w.id);w.cells.push(cell);
+  }
+});
+const numbers=new Map([...starts.keys()].sort((a,b)=>a-b).map((p,i)=>[p,i+1]));
+let answers={},selected=words[0].id,position=0,done=false;
+try{answers=JSON.parse(localStorage.getItem('aegypten-bonus-kreuzwort-v1')||'{}')||{}}catch(_){answers={}}
+const inputs=new Map(),tiles=new Map(),clues=new Map();
+const grid=$('crossword');
+for(let p=0;p<R*C;p++){
+  const tile=document.createElement('div');
+  tile.className='cell';
+  if(!occupied.has(p)){tile.classList.add('block');tile.setAttribute('aria-hidden','true');}
+  else{
+    const info=occupied.get(p);
+    if(numbers.has(p)){const n=document.createElement('span');n.className='n';n.textContent=numbers.get(p);tile.append(n);}
+    const input=document.createElement('input');
+    input.type='text';input.maxLength=1;input.inputMode='text';input.autocapitalize='characters';input.autocomplete='off';input.spellcheck=false;
+    input.setAttribute('aria-label','Zeile '+(Math.floor(p/C)+1)+', Spalte '+(p%C+1));
+    input.value=typeof answers[p]==='string'?answers[p]:'';
+    input.addEventListener('focus',()=>pickCell(p,false));
+    input.addEventListener('click',()=>pickCell(p,true));
+    input.addEventListener('input',()=>{
+      const normalized=(input.value||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z]/g,'');
+      const ch=normalized.slice(-1);
+      input.value=ch;
+      if(ch)answers[p]=ch;else delete answers[p];
+      persist();feedbackOff();updateProgress();highlight();
+      if(ch&& !done){const w=words[selected],i=w.cells.indexOf(p);if(i>=0&&i<w.cells.length-1)focusCell(w.cells[i+1]);}
+      if(allCorrect())finish();
+    });
+    input.addEventListener('keydown',e=>{
+      const w=words[selected],i=w.cells.indexOf(p);
+      if(e.key==='Backspace' && !input.value && i>0){e.preventDefault();const prev=w.cells[i-1];delete answers[prev];inputs.get(prev).value='';persist();focusCell(prev);updateProgress();}
+      if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key==='ArrowLeft'||e.key==='ArrowUp'){
+        const delta=(e.key==='ArrowRight'||e.key==='ArrowDown')?1:-1;
+        const mode=(e.key==='ArrowRight'||e.key==='ArrowLeft')?0:1;
+        let candidates=info.words.filter(id=>words[id].dir===mode);
+        if(candidates.length)selected=candidates[0];
+        const next=words[selected].cells.indexOf(p)+delta;
+        if(next>=0&&next<words[selected].cells.length){e.preventDefault();focusCell(words[selected].cells[next]);}
+        highlight();
+      }
+    });
+    tile.append(input);inputs.set(p,input);
+  }
+  grid.append(tile);tiles.set(p,tile);
+}
+function makeClues(dir,target){
+ const list=words.filter(w=>w.dir===dir).sort((a,b)=>numbers.get(a.cells[0])-numbers.get(b.cells[0]));
+ list.forEach(w=>{
+   const btn=document.createElement('button');btn.type='button';btn.className='clue';btn.dataset.id=w.id;
+   const strong=document.createElement('strong');strong.textContent=numbers.get(w.cells[0])+'. ';
+   btn.append(strong,document.createTextNode(w.clue));
+   btn.addEventListener('click',()=>selectWord(w.id,true));
+   $(target).append(btn);clues.set(w.id,btn);
+ });
+}
+makeClues(0,'clues-across');makeClues(1,'clues-down');
+function persist(){try{localStorage.setItem('aegypten-bonus-kreuzwort-v1',JSON.stringify(answers));}catch(_){}}
+function wordCorrect(w){return w.cells.every((p,i)=>answers[p]===w.text[i]);}
+function allCorrect(){return words.every(wordCorrect);}
+function updateProgress(){
+ const correct=words.filter(wordCorrect).length;
+ $('progress-text').textContent=correct+' von '+words.length+' Wörtern richtig';
+ $('progress-fill').style.width=correct/words.length*100+'%';
+ clues.forEach((el,id)=>el.classList.toggle('done',wordCorrect(words[id])));
+}
+function highlight(){
+ tiles.forEach((tile,p)=>{
+   tile.classList.toggle('active',occupied.has(p)&&words[selected].cells.includes(p));
+   tile.classList.toggle('selected',p===position);
+ });
+ clues.forEach((el,id)=>el.classList.toggle('active',id===selected));
+}
+function feedbackOff(){$('feedback').className='hidden';tiles.forEach(t=>t.classList.remove('wrong'));}
+function focusCell(p){position=p;highlight();const input=inputs.get(p);if(input){input.focus({preventScroll:true});input.select();}}
+function selectWord(id,focus){selected=id;const w=words[id];let p=w.cells.find(p=>!answers[p])??w.cells[0];position=p;highlight();if(focus){document.querySelector('.grid-scroll').scrollIntoView({behavior:'smooth',block:'start'});focusCell(p);}}
+function pickCell(p,tapped){
+ const ids=occupied.get(p).words;
+ if(!ids.includes(selected))selected=ids[0];
+ else if(tapped&&ids.length>1)selected=ids[(ids.indexOf(selected)+1)%ids.length];
+ position=p;highlight();
+}
+function finish(){
+ if(done)return;done=true;
+ persist();
+ try{localStorage.setItem('aegypten-bonus-geloest-v1','1');}catch(_){}
+ setTimeout(()=>{
+  $('game').classList.add('hidden');$('victory').classList.remove('hidden');window.scrollTo(0,0);
+ },350);
+}
+$('check').addEventListener('click',()=>{
+ const correct=words.filter(wordCorrect).length,filled=[...occupied.keys()].filter(p=>!!answers[p]).length;
+ const box=$('feedback');box.className='bad';
+ if(!filled){box.textContent='Trage zuerst einige Begriffe in das Kreuzworträtsel ein.';}
+ else if(correct===20){finish();return;}
+ else{box.textContent=correct+' von 20 Wörtern sind bereits richtig. Überprüfe die rot markierten Felder und versuche es weiter!';}
+ occupied.forEach((obj,p)=>{
+   if(answers[p] && answers[p]!==obj.letter)tiles.get(p).classList.add('wrong');
+ });
+});
+const bank=['GRABBEIGABEN','MAAT','DUAMUTEF','MUMIE','SENET','ANUBIS','LEINEN','HERZ','AMSET','NATRON','JENSEITS','FEDER','KANOPEN','MUMIFIZIERUNG','OSIRIS','USCHEBTI','HAPI','AMULETT','TOTENGERICHT','KEBECHSENUEF'];
+bank.forEach(text=>{const span=document.createElement('span');span.textContent=text;$('wordbank').append(span);});
+function showHelp(open){
+ $('help-overlay').classList.toggle('hidden',!open);
+ $('help-open').setAttribute('aria-expanded',String(open));
+ if(open){$('help-close').focus();}else{$('help-open').focus();}
+}
+$('help-open').addEventListener('click',()=>showHelp(true));
+$('help-close').addEventListener('click',()=>showHelp(false));
+$('help-overlay').addEventListener('click',e=>{if(e.target===$('help-overlay'))showHelp(false);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('help-overlay').classList.contains('hidden'))showHelp(false);});
+$('back-to-grid').addEventListener('click',()=>{$('victory').classList.add('hidden');$('game').classList.remove('hidden');window.scrollTo(0,0);});
+$('victory-image').addEventListener('error',function(){
+ const note=document.createElement('p');note.textContent='Das Abschlussbild konnte nicht geladen werden. Bitte überprüfe die Internetverbindung.';this.insertAdjacentElement('afterend',note);
+});
+updateProgress();highlight();
+if(allCorrect())finish();
+})();
+</script>
+</body>
+</html>
