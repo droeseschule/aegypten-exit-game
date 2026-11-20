@@ -292,7 +292,8 @@ function closeVideo(){s2video.pause();modal.classList.add('hidden');$('memory-vi
 $('video-close').addEventListener('click',closeVideo);
 modal.addEventListener('click',function(e){if(e.target===modal)closeVideo()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.classList.contains('hidden'))closeVideo()});
-s2video.addEventListener('error',function(){$('video-modal-status').textContent='Das zusätzliche Kanopen-Video ist noch nicht hinterlegt. Die Aufgaben kannst du auch mit dem Infotext lösen.'});
+s2video.addEventListener('canplay',function(){$('video-modal-status').textContent='✓ Das Hilfevideo ist geladen. Tippe im Videofenster auf ▶, um es anzusehen.'});
+s2video.addEventListener('error',function(){$('video-modal-status').textContent='⚠️ Das Video konnte nicht geladen werden. Bitte prüfe die Internetverbindung oder öffne die Seite erneut in Safari.'});
 var solutions=['Göttern','Verstorbenen','Jenseits'];
 var normalize=function(s){return s.normalize('NFKC').trim().toLocaleLowerCase('de-DE')};
 $('cloze-help').addEventListener('click',function(){var hidden=$('cloze-words').classList.toggle('hidden');$('cloze-help').setAttribute('aria-expanded',String(!hidden))});
