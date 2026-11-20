@@ -192,7 +192,7 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 .s4-assigned-summary button.has-card{border-color:#287d58;background:#e1f6e7}
 .s4-assigned-summary strong{display:block;font-size:17px}
 .s4-glyph{width:clamp(190px,38vw,325px);height:clamp(154px,25vw,235px);padding:12px;display:flex;justify-content:center;align-items:center;background:radial-gradient(circle,#fff2ca,#dfb46b 70%,#a16d32);border:10px ridge #9f662d;border-radius:19px;box-shadow:0 8px 22px #6e431a66;margin:15px auto}
-.s4-glyph img{display:block;max-width:93%;height:auto;max-height:70%;object-fit:contain;filter:drop-shadow(1px 2px 0 #fff1cd)}
+.s4-glyph img{display:block;width:82%;height:72%;max-width:93%;object-fit:contain;filter:drop-shadow(1px 2px 0 #fff1cd)}
 .s4-door{display:flex;flex-direction:column;align-items:center;gap:15px}
 .s4-door .door-frame{width:min(100%,585px)}
 .s4-door .tile{position:absolute;display:flex;align-items:center;justify-content:center;width:12.25%;height:3.75%;background:linear-gradient(155deg,#f8c575,#c88739 75%,#9c6023);border:1px solid #6e3b17;border-radius:6px;box-shadow:inset 2px 2px 4px #ffe19a,inset -2px -3px 3px #8e501e,0 1px 4px #1d0d06b6;z-index:2}
@@ -310,6 +310,51 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 <script>
 (function(){'use strict';
 var $=function(id){return document.getElementById(id)};
+
+/* Cacheprüfung und GitHub-Rohdatei als Ausweichquelle, falls GitHub Pages noch eine ältere Version ausliefert. */
+var MEDIA_REV='20261120-4b';
+var MEDIA_RAW='https://raw.githubusercontent.com/droeseschule/aegypten-exit-game/main/';
+function mediaErrorNotice(message){
+ var screens=document.querySelectorAll('.screen:not(.hidden) .s4-status');
+ if(screens.length){screens[0].textContent=message}
+}
+function prepareMedia(){
+ document.querySelectorAll('img[src^="station4-"]').forEach(function(img){
+  var path=img.getAttribute('src').split('?')[0];
+  img.addEventListener('error',function(){
+   if(img.dataset.rawFallback==='yes'){
+    if(!img.dataset.errorShown){
+     img.dataset.errorShown='yes';
+     var warning=document.createElement('p');
+     warning.className='s4-status';
+     warning.textContent='⚠️ Dieses Bild konnte nicht geladen werden. Bitte prüfe die Verbindung und lade die Seite erneut.';
+     img.insertAdjacentElement('afterend',warning);
+    }
+    return;
+   }
+   img.dataset.rawFallback='yes';
+   img.src=MEDIA_RAW+path+'?v='+MEDIA_REV;
+  });
+  img.src=path+'?v='+MEDIA_REV;
+ });
+ document.querySelectorAll('#audio-assets audio').forEach(function(a){
+  var path=a.getAttribute('src').split('?')[0];
+  a.preload='metadata';
+  a.addEventListener('error',function(){
+   if(a.dataset.rawFallback==='yes'){
+    a.dataset.mediaUnavailable='yes';
+    mediaErrorNotice('⚠️ Die Audiodatei konnte weder über GitHub Pages noch über GitHub geladen werden. Bitte prüfe die Verbindung.');
+    return;
+   }
+   a.dataset.rawFallback='yes';
+   a.src=MEDIA_RAW+path+'?v='+MEDIA_REV;
+   a.load();
+  });
+  a.src=path+'?v='+MEDIA_REV;
+ });
+}
+prepareMedia();
+
 var names=['intro','explore','match','ammit','glyph','door'];
 var active='',stageTimer=null,otherTimer=null,doorTimers=[],currentAudio=null;
 function clearTimers(){if(stageTimer){clearTimeout(stageTimer);stageTimer=null}if(otherTimer){clearTimeout(otherTimer);otherTimer=null}doorTimers.forEach(clearTimeout);doorTimers=[]}
@@ -320,7 +365,12 @@ function sound(n,statusId){
  currentAudio=a;
  var task;
  try{task=a.play()}catch(e){task=Promise.reject(e)}
- if(task&&typeof task.then==='function'){task.then(function(){if(stat)stat.textContent='🔊 Die Stimme wird abgespielt.'}).catch(function(){if(stat)stat.textContent='Safari hat die automatische Wiedergabe verhindert. Tippe auf den Abspielbutton, um die Stimme anzuhören.'})}
+ if(task&&typeof task.then==='function'){task.then(function(){if(stat&&currentAudio===a)stat.textContent='🔊 Die Stimme wird abgespielt.'}).catch(function(err){
+ if(!stat||currentAudio!==a)return;
+ if(a.dataset.mediaUnavailable==='yes')stat.textContent='⚠️ Die Audiodatei konnte nicht geladen werden. Prüfe die Internetverbindung.';
+ else if(err&&err.name==='NotAllowedError')stat.textContent='▶ Safari verhindert die automatische Tonwiedergabe. Tippe auf „Stimme nochmal anhören“ bzw. den Audio-Button.';
+ else stat.textContent='⚠️ Die Aufnahme konnte nicht abgespielt werden. Tippe erneut auf den Audio-Button. Falls nötig, lade die Seite neu.';
+})}
 }
 function scheduleAudio(n,delay,status){if(stageTimer)clearTimeout(stageTimer);stageTimer=setTimeout(function(){stageTimer=null;sound(n,status)},delay)}
 function show(which){
