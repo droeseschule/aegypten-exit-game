@@ -1,24 +1,22 @@
-# Das Geheimnis der Mumie – Exit-Game (Klasse 6)
+# Das Geheimnis der Mumie – ägyptisches Exit-Game (Klasse 6)
 
-Die App liegt im Repository, ist aber **erst nach Aktivierung von GitHub Pages** öffentlich erreichbar. Die Einstiegsbilder sind in `index.html` enthalten.
+**Die App-Dateien sind vollständig hochgeladen:** `index.html` (mit Bildern), `video.mp4` und `.nojekyll`.
 
-## Website aktivieren
-1. Öffne https://github.com/droeseschule/aegypten-exit-game/settings/pages
-2. Unter **Build and deployment → Source** wähle **GitHub Actions**. Die Datei `.github/workflows/pages.yml` ist bereits vorhanden – **keinen neuen Workflow erstellen**.
-3. Öffne https://github.com/droeseschule/aegypten-exit-game/actions/workflows/pages.yml und starte bei Bedarf **Run workflow → main → Run workflow**.
-4. Nach einem erfolgreichen Deployment: https://droeseschule.github.io/aegypten-exit-game/
+## GitHub Pages mit einem Klick aktivieren
 
-### Video hinzufügen (Pflicht)
-Aktuell fehlt **video.mp4**, daher blockiert die App richtigerweise nach der Videoseite.
-1. Lade die bereitgestellte Datei `video.mp4` aus dem Chat herunter.
-2. Öffne https://github.com/droeseschule/aegypten-exit-game/upload/main
-3. Lade genau `video.mp4` **ins Stammverzeichnis** hoch, neben `index.html`.
-4. Klicke **Commit changes**. Dadurch startet automatisch eine neue Veröffentlichung.
+1. [Pages-Einstellungen öffnen](https://github.com/droeseschule/aegypten-exit-game/settings/pages)
+2. **Build and deployment → Source → Deploy from a branch** wählen.
+3. Unter **Branch** den Branch **main** und den Ordner **/(root)** wählen.
+4. Auf **Save** klicken.
 
-**Nicht** das gesamte ZIP hochladen und nicht `index.html` ersetzen – die App ist schon auf GitHub.
+Es wird **kein GitHub-Actions-Workflow** benötigt. Ein älterer, wiederholt gescheiterter Actions-Workflow wurde entfernt.
 
-## Nutzung auf iPads
-Die Schüler öffnen die HTTPS-Adresse in **Safari**. Keine App-Installation, kein Login, kein Download der Website nötig. Vor dem Einsatz die echte iPad-Wiedergabe und die Schaltflächen ausprobieren.
+Danach lautet die öffentliche Adresse:
+https://droeseschule.github.io/aegypten-exit-game/
 
-## Bekannte Grenze
-Die Online-Seite kann nicht vollständig funktionieren, bevor das Video vorhanden ist. Ein iPad-Test kann erst nach der Veröffentlichung erfolgen.
+Auf den Schüler-iPads die Seite über **Safari** öffnen, nicht als HTML-Datei in der Dateien-App. Die Webseite benötigt keine Installation oder Schüler-Anmeldung.
+
+## Fehlersuche
+- Zeigt der Link 404 an? Prüfen, ob Pages auf `Deploy from a branch`, `main`, `/(root)` und **Save** gesetzt ist.
+- Startet das Video nicht? Teste direkt `https://droeseschule.github.io/aegypten-exit-game/video.mp4` in Safari. Die hochgeladene Datei liegt im Stammverzeichnis neben `index.html`.
+- Prüfe den Status unter [GitHub Actions](https://github.com/droeseschule/aegypten-exit-game/actions) auf den automatisch erstellten Pages-Build (nach Aktivierung).
