@@ -164,7 +164,7 @@ words.forEach(w=>{
   }
 });
 const numbers=new Map([...starts.keys()].sort((a,b)=>a-b).map((p,i)=>[p,i+1]));
-let answers={},selected=words[0].id,position=0,done=false;
+let answers={},selected=words[0].id,position=0,done=false,lastTapped=-1;
 try{answers=JSON.parse(localStorage.getItem('aegypten-bonus-kreuzwort-v1')||'{}')||{}}catch(_){answers={}}
 const inputs=new Map(),tiles=new Map(),clues=new Map();
 const grid=$('crossword');
@@ -180,7 +180,7 @@ for(let p=0;p<R*C;p++){
     input.setAttribute('aria-label','Zeile '+(Math.floor(p/C)+1)+', Spalte '+(p%C+1));
     input.value=typeof answers[p]==='string'?answers[p]:'';
     input.addEventListener('focus',()=>pickCell(p,false));
-    input.addEventListener('click',()=>pickCell(p,true));
+    input.addEventListener('click',()=>{pickCell(p,lastTapped===p);lastTapped=p;input.select();});
     input.addEventListener('input',()=>{
       const normalized=(input.value||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z]/g,'');
       const ch=normalized.slice(-1);
@@ -235,8 +235,8 @@ function highlight(){
  clues.forEach((el,id)=>el.classList.toggle('active',id===selected));
 }
 function feedbackOff(){$('feedback').className='hidden';tiles.forEach(t=>t.classList.remove('wrong'));}
-function focusCell(p){position=p;highlight();const input=inputs.get(p);if(input){input.focus({preventScroll:true});input.select();}}
-function selectWord(id,focus){selected=id;const w=words[id];let p=w.cells.find(p=>!answers[p])??w.cells[0];position=p;highlight();if(focus){document.querySelector('.grid-scroll').scrollIntoView({behavior:'smooth',block:'start'});focusCell(p);}}
+function focusCell(p){lastTapped=-1;position=p;highlight();const input=inputs.get(p);if(input){input.focus({preventScroll:true});input.select();}}
+function selectWord(id,focus){lastTapped=-1;selected=id;const w=words[id];let p=w.cells.find(p=>!answers[p])??w.cells[0];position=p;highlight();if(focus){document.querySelector('.grid-scroll').scrollIntoView({behavior:'smooth',block:'start'});focusCell(p);}}
 function pickCell(p,tapped){
  const ids=occupied.get(p).words;
  if(!ids.includes(selected))selected=ids[0];
@@ -272,7 +272,7 @@ $('help-open').addEventListener('click',()=>showHelp(true));
 $('help-close').addEventListener('click',()=>showHelp(false));
 $('help-overlay').addEventListener('click',e=>{if(e.target===$('help-overlay'))showHelp(false);});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('help-overlay').classList.contains('hidden'))showHelp(false);});
-$('back-to-grid').addEventListener('click',()=>{$('victory').classList.add('hidden');$('game').classList.remove('hidden');window.scrollTo(0,0);});
+$('back-to-grid').addEventListener('click',()=>{done=false;$('victory').classList.add('hidden');$('game').classList.remove('hidden');window.scrollTo(0,0);});
 $('victory-image').addEventListener('error',function(){
  const note=document.createElement('p');note.textContent='Das Abschlussbild konnte nicht geladen werden. Bitte überprüfe die Internetverbindung.';this.insertAdjacentElement('afterend',note);
 });
