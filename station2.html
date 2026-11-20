@@ -184,12 +184,12 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 <div class="actions"><a href="index.html" class="btn btn-light">← Zurück zu Station 1</a><button type="button" id="info-next" class="btn btn-primary">Zum Memory-Spiel ➜</button></div></div>
 </section>
 <section class="screen screen2 hidden" id="screen-memory"><div class="body">
-<div class="chips" aria-hidden="true"><span class="chip passed">✓ Infotext</span><span class="chip active">1 · Memory</span><span class="chip">2 · Lückentext</span><span class="chip">3 · Tür</span></div>
+<div class="chips" aria-hidden="true"><span class="chip passed">✓ Infotext</span><span class="chip active">1 · Memory</span><span class="chip">2 · Lückentext</span><span class="chip">3 · Zeichen</span><span class="chip">4 · Tür</span></div>
 <p class="stage">Die Wächter der Kanopen</p><h2>Finde die vier richtigen Paare!</h2>
 <p class="lead">Decke zwei Karten auf. Ein Bild und der passende Text bilden ein Paar. Richtige Paare leuchten grün und bleiben offen. Die Karten werden bei jedem neuen Spiel gemischt.</p>
 <div id="memory-board" class="memory-board" aria-label="Memory mit acht Karten"></div>
 <p id="memory-status" class="memory-status" role="status" aria-live="polite">Finde alle vier Paare!</p>
-<div class="actions"><button type="button" class="btn btn-light" id="memory-text-button" aria-expanded="false" aria-controls="memory-text-panel">📜 Hilfe: Infotext anzeigen</button><button type="button" class="btn btn-light" id="memory-reset">💡 Hilfe: Memory neu starten</button><button type="button" class="btn btn-blue" id="memory-video">🎬 Hilfevideo öffnen</button><button type="button" class="btn btn-primary hidden" id="memory-finish">Zum Zeichen ➜</button></div>
+<div class="actions"><button type="button" class="btn btn-light" id="memory-text-button" aria-expanded="false" aria-controls="memory-text-panel">📜 Hilfe: Infotext anzeigen</button><button type="button" class="btn btn-light" id="memory-reset">↻ Memory neu starten</button><button type="button" class="btn btn-blue" id="memory-video">🎬 Hilfevideo öffnen</button><button type="button" class="btn btn-primary hidden" id="memory-finish">Zum Lückentext ➜</button></div>
 <div id="memory-text-panel" class="memory-text-help hidden" aria-label="Infotext als Hilfe zum Memory">
 <h3>Der Kanopenkasten im Alten Ägypten</h3>
 <p>Im Alten Ägypten glaubten die Menschen an ein Leben nach dem Tod. Deshalb wurden die Körper der Verstorbenen mumifiziert, damit sie möglichst lange erhalten blieben. Bei der Mumifizierung entfernten die Ägypter wichtige Organe wie die Leber, die Lunge, den Magen und den Darm. Diese wurden besonders behandelt, in Leinentücher gewickelt und in vier Gefäßen aufbewahrt. Diese Gefäße nannte man <strong>Kanopen</strong>.</p>
@@ -197,15 +197,8 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 <p>Die Kanopenkästen waren häufig mit Hieroglyphen und Bildern von Göttern geschmückt. Diese sollten die Verstorbenen auf ihrer Reise ins Jenseits beschützen. Die Ägypter glaubten, dass die aufbewahrten Organe für das Leben nach dem Tod wichtig waren.</p>
 </div>
 </div></section>
-<section class="screen screen2 hidden" id="screen-glyph"><div class="body glyph-stage">
-<p class="stage">Alle vier Paare gefunden!</p><h1>Die zweite Hieroglyphe!</h1>
-<p class="lead" style="text-align:center">Die Schutzgötter der Kanopen haben dir das zweite Zeichen verraten.</p>
-<div class="memory-glyph" role="img" aria-label="Hieroglyphe 𓅱"><span class="exact-hieroglyph" role="img" aria-label="Hieroglyphe 𓅱">&#x13171;</span></div>
-<p class="glyph-note">Dein Zeichen: <strong>𓅱</strong></p>
-<div class="actions"><button type="button" id="glyph-next" class="btn btn-primary">Weiter zum Lückentext ➜</button></div>
-</div></section>
 <section class="screen screen2 hidden" id="screen-cloze"><div class="body">
-<div class="chips" aria-hidden="true"><span class="chip passed">✓ Memory</span><span class="chip active">2 · Lückentext</span><span class="chip">3 · Tür</span></div>
+<div class="chips" aria-hidden="true"><span class="chip passed">✓ Memory</span><span class="chip active">2 · Lückentext</span><span class="chip">3 · Zeichen</span><span class="chip">4 · Tür</span></div>
 <p class="stage">Letztes Rätsel der zweiten Station</p><h2>Vervollständige die Botschaft!</h2>
 <p class="lead">Trage die drei fehlenden Wörter in die Lücken ein. Du kannst die Wörter mit der Tastatur eingeben.</p>
 <div class="cloze-text">Die Kanopenkästen waren häufig mit Hieroglyphen und Bildern von
@@ -215,6 +208,13 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 <div class="actions"><button type="button" id="cloze-check" class="btn btn-primary">✓ Antworten prüfen</button><button type="button" id="cloze-help" class="btn btn-light" aria-expanded="false">💡 Hilfe: Lösungswörter</button></div>
 <div id="cloze-words" class="cloze-words hidden">Diese Wörter helfen dir: <strong>Jenseits · Göttern · Verstorbenen</strong></div>
 <div id="cloze-feedback" class="feedback hidden" role="status" aria-live="polite"></div>
+</div></section>
+<section class="screen screen2 hidden" id="screen-glyph"><div class="body glyph-stage">
+<p class="stage">Beide Rätsel gelöst!</p><h1>Die zweite Hieroglyphe!</h1>
+<p class="lead" style="text-align:center">Die Schutzgötter der Kanopen haben dir das zweite Zeichen verraten.</p>
+<div class="memory-glyph" role="img" aria-label="Hieroglyphe 𓅱"><span class="exact-hieroglyph" role="img" aria-label="Hieroglyphe 𓅱">&#x13171;</span></div>
+<p class="glyph-note">Dein Zeichen: <strong>𓅱</strong></p>
+<div class="actions"><button type="button" id="glyph-next" class="btn btn-primary">Zeichen in die Tür einsetzen ➜</button></div>
 </div></section>
 <section class="screen screen2 hidden s2-door" id="screen-door"><div class="body door-layout">
 <p class="stage">Das zweite Schloss der Grabkammer</p><h2 style="text-align:center">Dein zweites Zeichen öffnet das nächste Schloss!</h2>
@@ -237,11 +237,11 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 <script>
 (function(){'use strict';
 var $=function(id){return document.getElementById(id)};
-var screens=['info','memory','glyph','cloze','door'],active='info',timer=null,secondTimer=null;
+var screens=['info','memory','cloze','glyph','door'],active='info',timer=null,secondTimer=null;
 function show(id){if(timer){clearTimeout(timer);timer=null}if(secondTimer&&id!=='door'){clearTimeout(secondTimer);secondTimer=null}
 screens.forEach(function(s){var el=$('screen-'+s);el.classList.toggle('hidden',s!==id);el.setAttribute('aria-hidden',String(s!==id))});
 active=id;if(id==='memory')redraw();window.scrollTo(0,0)}
-var backs={memory:'info',glyph:'memory',cloze:'glyph',door:'cloze'};
+var backs={memory:'info',cloze:'memory',glyph:'cloze',door:'glyph'};
 Object.keys(backs).forEach(function(stage){var el=$('screen-'+stage),a=el.querySelector('.actions');
 if(stage==='door'){a=document.createElement('div');a.className='actions';el.querySelector('.door-layout').insertBefore(a,el.querySelector('.door-frame'))}
 var b=document.createElement('button');b.type='button';b.className='btn btn-light back-button';b.textContent='← Zurück';b.addEventListener('click',function(){if(active!==stage)return;show(backs[stage])});a.prepend(b)});
@@ -276,16 +276,16 @@ else{timer=setTimeout(function(){flipped=[];lock=false;redraw()},1050)}}
 function celebrate(){if(active!=='memory'||celebrated)return;celebrated=true;
 var board=$('memory-board'),br=board.getBoundingClientRect(),cx=br.left+br.width/2,cy=br.top+br.height/2;
 Array.prototype.forEach.call(board.querySelectorAll('.memory-card'),function(el){var r=el.getBoundingClientRect();el.style.setProperty('--fly-x',(cx-r.left-r.width/2)+'px');el.style.setProperty('--fly-y',(cy-r.top-r.height/2)+'px')});
-board.classList.add('fly-away');$('memory-status').textContent='Geschafft! Die Karten geben das zweite Zeichen frei …';
-timer=setTimeout(function(){show('glyph')},1800)}
+board.classList.add('fly-away');$('memory-status').textContent='Geschafft! Alle vier Paare sind gefunden. Weiter zum Lückentext …';
+timer=setTimeout(function(){show('cloze')},1800)}
 $('memory-text-button').addEventListener('click',function(){
  var panel=$('memory-text-panel'),open=panel.classList.toggle('hidden')===false;
  $('memory-text-button').setAttribute('aria-expanded',String(open));
  $('memory-text-button').textContent=open?'📜 Hilfe: Infotext schließen':'📜 Hilfe: Infotext anzeigen';
 });
 $('memory-reset').addEventListener('click',function(){reset()});
-$('glyph-next').addEventListener('click',function(){show('cloze')});
-$('memory-finish').addEventListener('click',function(){if(matched.length===4)show('glyph')});
+$('glyph-next').addEventListener('click',function(){show('door');animateDoor()});
+$('memory-finish').addEventListener('click',function(){if(matched.length===4)show('cloze')});
 var modal=$('video-modal'),s2video=$('s2-video');
 $('memory-video').addEventListener('click',function(){modal.classList.remove('hidden');$('video-close').focus()});
 function closeVideo(){s2video.pause();modal.classList.add('hidden');$('memory-video').focus()}
@@ -300,7 +300,7 @@ $('cloze-help').addEventListener('click',function(){var hidden=$('cloze-words').
 $('cloze-check').addEventListener('click',function(){var count=0;
 solutions.forEach(function(w,i){var input=$('gap-'+i),good=normalize(input.value)===normalize(w);input.classList.toggle('ok',good);input.classList.toggle('error',!good);if(good)count++});
 var f=$('cloze-feedback');f.classList.remove('hidden');f.className='feedback '+(count===3?'good':'bad');
-if(count===3){f.textContent='Alle drei Wörter sind richtig! Die Tür öffnet ihr zweites Schloss.';secondTimer=setTimeout(function(){show('door');animateDoor()},700)}
+if(count===3){f.textContent='Alle drei Wörter sind richtig! Du hast dir die zweite Hieroglyphe verdient.';secondTimer=setTimeout(function(){show('glyph')},700)}
 else{f.textContent=count+' von 3 Wörtern richtig. Schau noch einmal in den Infotext oder benutze die Hilfe.'}});
 solutions.forEach(function(_,i){$('gap-'+i).addEventListener('input',function(){$('gap-'+i).classList.remove('error','ok');$('cloze-feedback').classList.add('hidden')})});
 function animateDoor(){var tile=$('second-tile'),glow=$('second-glow');tile.classList.remove('flying','done');glow.classList.remove('flash');$('door-finished').classList.add('hidden');void tile.offsetWidth;tile.classList.add('flying');glow.classList.add('flash');secondTimer=setTimeout(function(){tile.classList.add('done');$('door-finished').classList.remove('hidden')},3150)}
