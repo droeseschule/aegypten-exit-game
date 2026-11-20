@@ -260,6 +260,7 @@ if(page==='sentence')drawSentence();
 }
 document.querySelectorAll('[data-back]').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-back'))})});
 function playVoice(manual){
+if(manual&&audioDelay){clearTimeout(audioDelay);audioDelay=null}
 var a=$('s3-audio'),status=$('audio-status');
 if(manual){a.pause();try{a.currentTime=0}catch(e){}}
 var p=a.play();
@@ -275,6 +276,7 @@ var items=leftWords.map(function(t,i){return {id:'l'+i,text:t,answer:'left'}}).c
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=a[i];a[i]=a[j];a[j]=tmp}return a}
 var itemsOrder=[],places={},chosen=null,sortSolved=false;
 function resetSort(){
+clearNext();
 itemsOrder=shuffle(items.map(function(o){return o.id}));places={};chosen=null;sortSolved=false;
 $('sort-feedback').classList.add('hidden');$('sort-next').classList.add('hidden');
 drawSort();
@@ -312,7 +314,7 @@ else{fb.className='feedback bad';fb.textContent='Links falsch einsortiert: '+bad
 $('sort-next').addEventListener('click',function(){if(sortSolved)show('sentence')});
 var parts=['Die alten Ägypter','gaben den Toten Grabbeigaben','mit ins Grab,','weil sie glaubten,','dass die Verstorbenen','diese Dinge im Leben nach dem Tod benötigten.'];
 var partOrder=shuffle([0,1,2,3,4,5]),assembled=[],sentenceSolved=false;
-function resetSentence(){partOrder=shuffle([0,1,2,3,4,5]);assembled=[];sentenceSolved=false;$('sentence-feedback').classList.add('hidden');$('sentence-next').classList.add('hidden');drawSentence()}
+function resetSentence(){clearNext();partOrder=shuffle([0,1,2,3,4,5]);assembled=[];sentenceSolved=false;$('sentence-feedback').classList.add('hidden');$('sentence-next').classList.add('hidden');drawSentence()}
 function drawSentence(){
 var target=$('sentence-target'),pool=$('sentence-pieces');target.innerHTML='';pool.innerHTML='';
 if(!assembled.length){var p=document.createElement('span');p.className='sentence-prompt';p.textContent='Hier erscheinen deine ausgewählten Satzteile.';target.appendChild(p)}
