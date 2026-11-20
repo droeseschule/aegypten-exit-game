@@ -151,11 +151,11 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 .s2-door .door-tile{position:absolute;left:20.3%;width:12.25%;height:3.75%;background:linear-gradient(155deg,#f8c575,#c88739 75%,#9c6023);border:1px solid #6e3b17;border-radius:6px;box-shadow:inset 2px 2px 4px #ffe19a,inset -2px -3px 3px #8e501e,0 1px 4px #1d0d06b6;display:flex;align-items:center;justify-content:center;z-index:2}
 .s2-door .door-tile img,.s2-door .door-tile svg{width:94%;height:94%;object-fit:contain}
 .s2-door .first-tile{top:46.28%}
-.s2-door .second-tile{top:59.4%;opacity:0}
+.s2-door .second-tile{top:58.6%;opacity:0}
 .s2-door .second-tile.flying{animation:s2TileFlight 3s cubic-bezier(.22,.73,.21,1) forwards}
 .s2-door .second-tile.done{opacity:1}
 @keyframes s2TileFlight{0%{opacity:0;transform:translate(170%,420%) scale(2.7) rotate(-22deg)}16%{opacity:1}65%{transform:translate(18%,65%) scale(1.35) rotate(-7deg)}88%{transform:translate(0,0) scale(.92)}100%{opacity:1;transform:none}}
-.s2-door .second-glow{top:58.9%}
+.s2-door .second-glow{top:58.2%}
 .s2-door .first-glow{display:none}
 @media(max-width:730px){.info-layout{grid-template-columns:1fr}.info-figure{position:static;max-width:590px;margin:auto}.memory-board{gap:8px}.memory-card{min-height:116px}.memory-card .card-front{padding:5px}.cloze-text{padding:15px}}
 @media(max-width:480px){.memory-board{grid-template-columns:repeat(2,minmax(0,1fr))}.memory-card{min-height:175px}.memory-card .card-text{font-size:14px}.gap-input{width:100%;max-width:240px;display:inline-block}.cloze-text{line-height:2.1}.video-modal-box{padding:11px}}
@@ -179,7 +179,7 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 <p class="lead">Decke zwei Karten auf. Ein Bild und der passende Text bilden ein Paar. Richtige Paare leuchten grün und bleiben offen. Die Karten werden bei jedem neuen Spiel gemischt.</p>
 <div id="memory-board" class="memory-board" aria-label="Memory mit acht Karten"></div>
 <p id="memory-status" class="memory-status" role="status" aria-live="polite">Finde alle vier Paare!</p>
-<div class="actions"><button type="button" class="btn btn-light" id="memory-reset">💡 Hilfe: Memory neu starten</button><button type="button" class="btn btn-blue" id="memory-video">🎬 Hilfevideo öffnen</button></div>
+<div class="actions"><button type="button" class="btn btn-light" id="memory-reset">💡 Hilfe: Memory neu starten</button><button type="button" class="btn btn-blue" id="memory-video">🎬 Hilfevideo öffnen</button><button type="button" class="btn btn-primary hidden" id="memory-finish">Zum Zeichen ➜</button></div>
 </div></section>
 <section class="screen screen2 hidden" id="screen-glyph"><div class="body glyph-stage">
 <p class="stage">Alle vier Paare gefunden!</p><h1>Die zweite Hieroglyphe!</h1>
@@ -224,7 +224,7 @@ var $=function(id){return document.getElementById(id)};
 var screens=['info','memory','glyph','cloze','door'],active='info',timer=null,secondTimer=null;
 function show(id){if(timer){clearTimeout(timer);timer=null}if(secondTimer&&id!=='door'){clearTimeout(secondTimer);secondTimer=null}
 screens.forEach(function(s){var el=$('screen-'+s);el.classList.toggle('hidden',s!==id);el.setAttribute('aria-hidden',String(s!==id))});
-active=id;window.scrollTo(0,0)}
+active=id;if(id==='memory')redraw();window.scrollTo(0,0)}
 var backs={memory:'info',glyph:'memory',cloze:'glyph',door:'cloze'};
 Object.keys(backs).forEach(function(stage){var el=$('screen-'+stage),a=el.querySelector('.actions');
 if(stage==='door'){a=document.createElement('div');a.className='actions';el.querySelector('.door-layout').insertBefore(a,el.querySelector('.door-frame'))}
@@ -248,7 +248,7 @@ b.setAttribute('aria-label',open?(card.type==='image'?'Bild: '+names[card.id]:st
 b.setAttribute('aria-pressed',String(open));
 b.addEventListener('click',function(){reveal(i)});
 board.appendChild(b)});
-$('memory-status').textContent=matched.length+' von 4 Paaren gefunden.'}
+$('memory-status').textContent=matched.length+' von 4 Paaren gefunden.';$('memory-finish').classList.toggle('hidden',matched.length!==4)}
 function persist(){try{sessionStorage.setItem('aegypten-station2-memory',JSON.stringify({deck:deck,matched:matched}))}catch(e){}}
 function reset(){if(timer)clearTimeout(timer);lock=false;flipped=[];matched=[];celebrated=false;deck=randomOrder();redraw();persist()}
 function load(){try{var s=JSON.parse(sessionStorage.getItem('aegypten-station2-memory'));if(s&&Array.isArray(s.deck)&&s.deck.length===8&&Array.isArray(s.matched)&&s.matched.length<=4&&s.deck.every(function(c){return c&&c.id>=0&&c.id<4&&(c.type==='image'||c.type==='text')})){deck=s.deck;matched=s.matched;oldArrangement=deck.map(function(x){return x.type+x.id}).join('|');celebrated=matched.length===4;return}}catch(e){}deck=randomOrder();matched=[]}
@@ -264,6 +264,7 @@ board.classList.add('fly-away');$('memory-status').textContent='Geschafft! Die K
 timer=setTimeout(function(){show('glyph')},1800)}
 $('memory-reset').addEventListener('click',function(){reset()});
 $('glyph-next').addEventListener('click',function(){show('cloze')});
+$('memory-finish').addEventListener('click',function(){if(matched.length===4)show('glyph')});
 var modal=$('video-modal'),s2video=$('s2-video');
 $('memory-video').addEventListener('click',function(){modal.classList.remove('hidden');$('video-close').focus()});
 function closeVideo(){s2video.pause();modal.classList.add('hidden');$('memory-video').focus()}
