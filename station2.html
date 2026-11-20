@@ -169,7 +169,8 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 .memory-text-help{margin-top:17px;background:#fffaf0;border:2px solid #cb9e5a;border-radius:15px;padding:clamp(14px,3vw,24px);font-size:16px;line-height:1.66}
 .memory-text-help h3{color:#663b18;font-size:23px;line-height:1.25;margin:0 0 14px}
 .memory-text-help p{margin:0 0 13px}
-</style></head><body>
+</style><link rel="stylesheet" href="glossar.css?v=1">
+</head><body>
 <div class="topline"></div><main class="wrap">
 <header><div class="logo">𓂀 DAS GEHEIMNIS DER GRABKAMMER</div><div class="header-pill">STATION 2 VON 4 · KANOPEN</div></header>
 <section class="frame" aria-label="Exit-Game: Kanopen">
@@ -307,4 +308,5 @@ function animateDoor(){var tile=$('second-tile'),glow=$('second-glow');tile.clas
 $('station2-replay').addEventListener('click',function(){reset();solutions.forEach(function(_,i){$('gap-'+i).value='';$('gap-'+i).classList.remove('ok','error')});$('cloze-feedback').classList.add('hidden');$('cloze-words').classList.add('hidden');$('cloze-help').setAttribute('aria-expanded','false');show('info')});
 load();redraw();show('info');
 })();
-</script></body></html>
+</script><script src="glossar.js?v=1" defer data-glossar-station="2"></script>
+</body></html>
