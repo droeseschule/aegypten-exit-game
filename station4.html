@@ -211,7 +211,8 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 .s4-door-message{font-size:clamp(18px,2.6vw,25px);font-weight:900;color:#6f3c16;text-align:center}
 @media(max-width:730px){.s4-assigned-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.s4-pool{grid-template-columns:1fr}.s4-card{touch-action:none}.s4-hero img{max-height:60vh}}
 @media(max-width:460px){.s4-hotspot{width:30px;height:30px;border-width:2px;font-size:16px}.s4-assigned-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.s4-card{padding:10px 12px;min-height:104px}.s4-card strong{font-size:16px}}
-</style></head>
+</style><link rel="stylesheet" href="glossar.css?v=1">
+</head>
 <body><div class="topline"></div><main class="wrap">
 <header><div class="logo">𓂀 DAS GEHEIMNIS DER GRABKAMMER</div><div class="header-pill">STATION 4 VON 4 · TOTENGERICHT</div></header>
 <section class="frame" aria-label="Ägypten-Exit-Game: Totengericht">
@@ -477,4 +478,5 @@ $('go-door').addEventListener('click',function(){show('door');animateDoor()});
 $('replay-station4').addEventListener('click',function(){startMatch();currentFact=null;$('explore-panel').classList.add('hidden');$('show-info').textContent='📜 Infotext anzeigen';$('show-info').setAttribute('aria-expanded','false');$('info-panel').classList.add('hidden');show('intro')});
 startMatch();show('intro');
 })();
-</script></body></html>
+</script><script src="glossar.js?v=1" defer data-glossar-station="4"></script>
+</body></html>
