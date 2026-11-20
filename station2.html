@@ -242,13 +242,13 @@ var open=matched.indexOf(card.id)!==-1||flipped.indexOf(i)!==-1;
 if(open)b.classList.add('is-open');
 if(matched.indexOf(card.id)!==-1)b.classList.add('is-match');
 b.disabled=matched.indexOf(card.id)!==-1||lock;
-var front=card.type==='image'?'<span class="card-image" style="--sprite-x:'+(card.id*100/3)+'%"></span>':'<span class="card-text">'+statements[card.id]+'</span>';
+var front=card.type==='image'?'<span class="card-image" style="--sprite-x:'+(card.id*100/3)+'%"></span>':'<span class="card-text"><strong>'+names[card.id]+'</strong> '+statements[card.id].slice(names[card.id].length+1)+'</span>';
 b.innerHTML='<span class="card-back" aria-hidden="true">𓂀<small>KANOPE</small></span><span class="card-front">'+front+'</span>';
 b.setAttribute('aria-label',open?(card.type==='image'?'Bild: '+names[card.id]:statements[card.id]):'Verdeckte Karte '+(i+1));
 b.setAttribute('aria-pressed',String(open));
 b.addEventListener('click',function(){reveal(i)});
 board.appendChild(b)});
-$('memory-status').textContent=matched.length+' von 4 Paaren gefunden.';$('memory-finish').classList.toggle('hidden',matched.length!==4)}
+$('memory-status').textContent=matched.length+' von 4 Paaren gefunden.';$('memory-finish').classList.toggle('hidden',matched.length!==4||!celebrated)}
 function persist(){try{sessionStorage.setItem('aegypten-station2-memory',JSON.stringify({deck:deck,matched:matched}))}catch(e){}}
 function reset(){if(timer)clearTimeout(timer);lock=false;flipped=[];matched=[];celebrated=false;deck=randomOrder();redraw();persist()}
 function load(){try{var s=JSON.parse(sessionStorage.getItem('aegypten-station2-memory'));if(s&&Array.isArray(s.deck)&&s.deck.length===8&&Array.isArray(s.matched)&&s.matched.length<=4&&s.deck.every(function(c){return c&&c.id>=0&&c.id<4&&(c.type==='image'||c.type==='text')})){deck=s.deck;matched=s.matched;oldArrangement=deck.map(function(x){return x.type+x.id}).join('|');celebrated=matched.length===4;return}}catch(e){}deck=randomOrder();matched=[]}
