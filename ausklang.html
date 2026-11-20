@@ -254,7 +254,8 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 <div class="actions">
 <button id="outro-back" type="button" class="btn btn-light">← Zurück</button>
 <button id="outro-repeat-2" type="button" class="btn btn-blue">🔊 Stimme nochmal anhören</button>
-<a class="btn btn-primary" href="index.html">↻ Exit-Game von vorne starten</a>
+<a class="btn btn-primary" href="bonus.html">⭐ Bonusaufgabe: Kreuzworträtsel ➜</a>
+<a class="btn btn-light" href="index.html">↻ Exit-Game von vorne starten</a>
 </div></div></section>
 </section>
 <p class="footer">Geschichte · Klasse 6 · Ausklang · Ohne Anmeldung · Für Safari auf dem iPad optimiert</p>
@@ -326,7 +327,7 @@ $('outro-repeat-2').addEventListener('click',function(){play(2)});
 $('outro-next').addEventListener('click',function(){show(2)});
 $('outro-back').addEventListener('click',function(){show(1)});
 window.addEventListener('pagehide',stopAll);
-setupMedia();show(1);
+setupMedia();show(new URLSearchParams(window.location.search).get('seite')==='2'?2:1);
 })();
 </script>
 </body></html>
