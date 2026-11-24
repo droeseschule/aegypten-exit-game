@@ -116,4 +116,4 @@ overlay.addEventListener('click',function(e){if(e.target===overlay)closeHelp();}
 document.addEventListener('keydown',function(e){if(!overlay.hidden&&e.key==='Escape'){e.preventDefault();closeHelp();}else if(!overlay.hidden&&e.key==='Tab'){e.preventDefault();close.focus();}});
 for(var i=1;i<=3;i++){(function(field){var key='aegypten-ewiges-leben-'+field.id;try{field.value=sessionStorage.getItem(key)||'';}catch(e){}field.addEventListener('input',function(){try{sessionStorage.setItem(key,field.value);}catch(e){}});})(document.getElementById('answer-'+i));}
 })();
-</script><script src="abgabe-config.js?v=2"></script><script src="abgabe.js?v=2"></script></body></html>
+</script><script src="abgabe-config.js?v=2"></script><script src="abgabe.js?v=3"></script></body></html>
