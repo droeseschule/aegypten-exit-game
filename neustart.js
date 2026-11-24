@@ -80,7 +80,7 @@
       } catch (_) { /* Storage may be disabled. */ }
       window.location.reload();
     } else if (element.tagName === 'A') {
-      try { ['aegypten-worksheet-receipt-v1','aegypten-worksheet-name-v1','aegypten-ewiges-leben-answer-1','aegypten-ewiges-leben-answer-2','aegypten-ewiges-leben-answer-3'].forEach(function(key){sessionStorage.removeItem(key);}); } catch (_) {}
+      try { ['aegypten-worksheet-receipt-v1','aegypten-worksheet-name-v1','aegypten-worksheet-first-name-v2','aegypten-ewiges-leben-answer-1','aegypten-ewiges-leben-answer-2','aegypten-ewiges-leben-answer-3'].forEach(function(key){sessionStorage.removeItem(key);}); } catch (_) {}
       window.location.assign(element.href);
     } else {
       // Let the existing station-specific restart logic run unchanged.
