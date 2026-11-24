@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="de">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2c1b14"><title>Das Geheimnis des ewigen Lebens – Ägypten-Exit-Game</title>
+<style>
+:root{--ink:#402a1c;--sand:#fff0d1;--gold:#ebaa36;--navy:#124b79;--blue:#146a9d;--success:#20725a;--danger:#ab3d32}
+*{box-sizing:border-box}
+html{background:#291a12;scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:"Trebuchet MS",Arial,sans-serif;background:radial-gradient(circle at 50% 0,#83502b 0,transparent 600px),repeating-linear-gradient(125deg,#2c1b14 0,#2c1b14 20px,#291810 21px,#291810 24px)}
+button,a{font:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #0e86cf;outline-offset:2px}
+[hidden],.hidden{display:none!important}
+.topline{height:8px;background:repeating-linear-gradient(90deg,#cf8831 0 31px,#12669a 32px 43px,#ffcc59 44px 62px,#12669a 63px 76px);border-bottom:2px solid #ffda77}
+.wrap{max-width:1120px;margin:auto;padding:13px 14px 44px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:11px 0 16px;color:#fff1d1}
+.logo{font-weight:1000;letter-spacing:.03em;font-size:clamp(14px,2.8vw,20px)}
+.header-pill{border:2px solid #f6c16a;background:#422b1c;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:900}
+.frame{background:#fff0d1;border:5px solid #ae6d29;border-radius:21px;box-shadow:0 0 0 2px #e0a749,0 15px 0 #160e0a,0 35px 60px #08040288;overflow:hidden;position:relative}
+.frame:before{content:"";position:absolute;inset:6px;z-index:2;border:2px solid #e2ad52;border-radius:11px;pointer-events:none}
+.body{padding:clamp(16px,3.3vw,33px);background:radial-gradient(circle at 95% -35%,#fce0a4,transparent 50%),repeating-linear-gradient(0deg,#fff4dc 0,#fff4dc 39px,#fff0d4 40px)}
+.stage{font-size:12px;letter-spacing:.15em;font-weight:1000;color:#956119;margin:0 0 8px;text-transform:uppercase}
+h1{font-size:clamp(26px,4vw,43px);margin:0 0 12px;line-height:1.15;color:#663b18}
+h2{font-size:clamp(21px,3vw,28px);color:#663b18}
+p{line-height:1.55}
+.intro{max-width:850px;margin:5px 0 17px;font-size:16px}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0 17px}
+.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;gap:8px;min-height:49px;padding:11px 18px;border-radius:13px;font-weight:1000;font-size:15px;text-decoration:none;box-shadow:0 3px 0 #79441e}
+.btn-primary{color:#3d250c;background:linear-gradient(#ffdf7b,#e8a12a);border:3px solid #9f5e19}
+.btn-blue{color:#fff;background:linear-gradient(#257bb6,#0e5689);border:3px solid #174364;box-shadow:0 3px 0 #0c3450}
+.btn-light{color:#674721;background:#fff9e9;border:2px solid #b78c4d;box-shadow:0 3px 0 #ba9a70}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #79441e}
+.progressline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-weight:900;color:#124b79;margin:6px 0 12px}
+.progressbar{width:190px;max-width:100%;height:12px;background:#e4cb9a;border-radius:99px;overflow:hidden;border:1px solid #b38b50}
+.progressbar span{height:100%;width:0;display:block;background:#328769;transition:width .2s}
+.game-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.grid-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:3px 4px 14px}
+.crossword{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));width:100%;max-width:660px;min-width:504px;margin:auto;border:3px solid #754d29;background:#a68c69;box-shadow:0 4px 0 #b99662;user-select:none}
+.cell{position:relative;aspect-ratio:1;min-width:0;border:1px solid #c4b5a3;background:white}
+.cell.block{background:#ecdfc8;border-color:#e2d3ba}
+.cell.active{background:#ffecae}
+.cell.selected{background:#ffe077;outline:2px solid #176d9d;outline-offset:-2px;z-index:1}
+.cell.wrong{background:#ffe0db}
+.cell input{display:block;width:100%;height:100%;border:0;background:transparent;text-align:center;font:bold clamp(13px,2.4vw,23px) "Trebuchet MS",Arial,sans-serif;color:#203a48;padding:6px 0 0;border-radius:0;text-transform:uppercase;caret-color:#0a6b9b}
+.cell input:focus{outline:none}
+.cell .n{position:absolute;left:2px;top:1px;font-size:clamp(7px,1vw,10px);font-weight:1000;color:#75451e;pointer-events:none;z-index:1}
+.wordpanel{margin:0 auto;max-width:900px}
+.cluecolumns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:20px 0 4px}
+.cluecolumns h2{font-size:18px;border-bottom:2px solid #cc922e;padding-bottom:7px;margin:0 0 9px}
+.clue{width:100%;display:block;background:rgba(255,255,255,.68);text-align:left;border:2px solid #e4c79a;border-radius:10px;color:#493024;padding:9px 10px;line-height:1.4;font-size:14px;margin:6px 0;cursor:pointer}
+.clue strong{color:#126097}
+.clue.active{background:#fff0bc;border-color:#1b78a8;box-shadow:0 0 0 1px #1b78a8}
+.clue.done{border-left:5px solid #3a926a}
+#feedback{padding:12px 14px;margin:13px 0;border-radius:12px;border:2px solid #bda77c;background:#fff9eb;line-height:1.5;font-weight:800}
+#feedback.bad{border-color:#b46558;background:#ffebe7}
+#feedback.good{border-color:#77b18f;background:#edf9ef}
+.helper-overlay{position:fixed;inset:0;background:rgba(19,12,8,.78);z-index:30;display:flex;justify-content:center;align-items:center;padding:16px}
+.helper-card{background:#fff7e7;color:#4b3020;border:5px solid #d29a42;border-radius:20px;max-width:730px;max-height:min(90vh,880px);overflow:auto;width:100%;padding:20px 24px;box-shadow:0 14px 45px #0007}
+.helper-card h2{margin:3px 0 8px}
+.wordbank{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:16px 0}
+.wordbank span{display:block;text-align:center;padding:10px 5px;border:1px solid #d6bd91;border-radius:8px;background:white;font-weight:900;color:#164e70;font-size:clamp(11px,1.5vw,15px);overflow-wrap:anywhere}
+.victory img{width:100%;height:auto;display:block;aspect-ratio:1672/941;object-fit:contain;background:#96c9db}
+.victory .body{text-align:center}
+.victory .body p{max-width:700px;margin:0 auto 14px}
+.victory .actions{justify-content:center}
+.footer{text-align:center;color:#f0d4a4;font-size:12px;margin:24px 10px}
+@media(min-width:1050px){.crossword{min-width:0}.grid-scroll{overflow:visible}}
+@media(max-width:660px){.cluecolumns{grid-template-columns:1fr}.wordbank{grid-template-columns:repeat(2,minmax(0,1fr))}.actions{align-items:stretch}.actions .btn{flex:1}.grid-scroll{margin:0 -10px}.cell input{font-size:17px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.worksheet-art{display:block;width:100%;height:auto;border:3px solid #b78c4d;border-radius:12px;margin:14px 0 22px;background:#f3d097}
+.worksheet-art[hidden]{display:none}
+.tasks{margin:0;padding-left:1.6em;font-size:clamp(16px,2vw,19px);line-height:1.55}
+.tasks li{padding-left:4px;margin-bottom:20px}
+.tasks label{font-weight:800;display:block;margin-bottom:9px}
+.tasks textarea{display:block;width:100%;min-height:105px;resize:vertical;border:2px solid #b78c4d;border-radius:10px;background:#fffdf6;color:var(--ink);padding:12px;font:inherit;font-size:16px;line-height:1.5}
+.tasks textarea:focus-visible{outline:3px solid #0e86cf;outline-offset:2px}
+.helper-card h3{color:#124b79;margin:16px 0 5px}
+.helper-card ul{padding-left:22px;line-height:1.65;margin-top:5px}
+.helper-card li{margin:5px 0}
+.helper-card .actions{justify-content:center}
+@media(max-width:450px){header{flex-wrap:wrap}.actions .btn{width:100%}.helper-card{padding:15px}}
+</style></head>
+<body><div class="topline"></div><main class="wrap">
+<header><div class="logo">𓂀 DAS GEHEIMNIS DER GRABKAMMER</div><div class="header-pill">BONUSAUFGABE · KLASSE 6</div></header>
+<section class="frame" aria-label="Zusatzaufgabe für ganz Schnelle"><div class="body">
+<p class="stage">Aufgaben für ganz Schnelle</p><h1>Das Geheimnis des ewigen Lebens</h1>
+<div class="actions"><button type="button" class="btn btn-blue" id="help-open" aria-haspopup="dialog" aria-expanded="false">💡 Hilfekarte</button></div>
+<img id="original-art" class="worksheet-art" alt="Der junge Forscher betrachtet das Schaubild zum Diesseits und Jenseits an einer ägyptischen Palastwand." hidden>
+<svg id="diagram-fallback" class="worksheet-art" viewBox="0 0 820 500" role="img" aria-label="Leben, Bestattung, Mumifizierung und Grab im Diesseits; Totengericht im Jenseits, danach ewiges Leben oder ewiger Tod.">
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#124b79"/></marker></defs>
+<rect width="820" height="500" fill="#f3d097"/><rect x="10" y="10" width="800" height="480" rx="16" fill="none" stroke="#a66b28" stroke-width="4"/>
+<g stroke="#124b79" stroke-width="3" fill="#fff0cf"><rect x="35" y="25" width="190" height="46" rx="12" fill="#e6e9e8"/><rect x="335" y="28" width="150" height="48" rx="10"/><rect x="65" y="120" width="100" height="50" rx="10"/><rect x="270" y="105" width="280" height="88" rx="12"/><rect x="30" y="215" width="760" height="255" rx="18" fill="none" stroke-dasharray="10 6"/><rect x="45" y="232" width="165" height="45" rx="10" fill="#e6e9e8"/><rect x="280" y="290" width="260" height="75" rx="12"/><rect x="85" y="410" width="270" height="45" rx="10"/><rect x="465" y="410" width="270" height="45" rx="10"/></g>
+<g stroke="#124b79" stroke-width="4" fill="none" marker-end="url(#arrow)"><path d="M410 76V100"/><path d="M410 193V284"/><path d="M345 365L225 404"/><path d="M475 365L595 404"/></g>
+<g fill="#272016" font-family="Trebuchet MS,Arial,sans-serif" font-size="24" font-weight="bold" text-anchor="middle"><text x="130" y="56">Diesseits</text><text x="410" y="59">Leben</text><text x="115" y="152">Tod</text><text x="410" y="130">Bestattung /</text><text x="410" y="155">Mumifizierung /</text><text x="410" y="181">Grab</text><text x="127" y="263">Jenseits</text><text x="410" y="323">Totengericht</text><text x="410" y="350" font-size="27">⚖</text><text x="220" y="439">ewiges Leben</text><text x="600" y="439">ewiger Tod</text></g></svg>
+<ol class="tasks"><li><label for="answer-1">Erkläre den Unterschied zwischen Diesseits und Jenseits.</label><textarea id="answer-1" rows="4" placeholder="Deine Antwort …"></textarea></li><li><label for="answer-2">Erkläre mithilfe des Schaubildes und deines Wissens aus dem Exit-Game, warum die Ägypter ihre Verstorbenen mumifizierten und ihnen Grabbeigaben mitgaben.</label><textarea id="answer-2" rows="4" placeholder="Deine Antwort …"></textarea></li><li><label for="answer-3">Erkläre, wie sich beim Totengericht entschied, ob ein Mensch das ewige Leben erlangte.</label><textarea id="answer-3" rows="4" placeholder="Deine Antwort …"></textarea></li></ol>
+<div class="actions"><a class="btn btn-light" href="ausklang.html?seite=2">← Zurück</a><a class="btn btn-primary" href="bonus.html">Weiter zum Kreuzworträtsel ➜</a></div>
+</div></section><p class="footer">Geschichte · Klasse 6 · Zusatzaufgabe · Ohne Anmeldung</p></main>
+<div class="helper-overlay" id="help-overlay" hidden><section class="helper-card" id="help-card" role="dialog" aria-modal="true" aria-labelledby="help-title" tabindex="-1">
+<h2 id="help-title">Hilfekarte – Für deine Antworten kannst du folgende Satzanfänge verwenden:</h2>
+<h3>Aufgabe 1:</h3><ul><li>Das Diesseits ist …</li><li>Wenn ein Mensch starb, …</li><li>Das Jenseits ist …</li></ul><h3>Aufgabe 2:</h3><ul><li>Der Körper wurde mumifiziert, weil …</li><li>In den Kanopen wurden …</li><li>Die Grabbeigaben sollten …</li></ul><h3>Aufgabe 3:</h3><ul><li>Beim Totengericht wurde …</li><li>Wenn das Herz schwerer als die Feder war, …</li><li>Wenn der Verstorbene das Totengericht bestand, …</li></ul>
+<div class="actions"><button type="button" class="btn btn-primary" id="help-close">Hilfekarte schließen</button></div></section></div>
+<script>
+(function(){
+'use strict';
+var image=document.getElementById('original-art'), fallback=document.getElementById('diagram-fallback');
+image.addEventListener('load',function(){image.hidden=false;fallback.style.display='none';});
+image.src='ewiges-leben.webp';
+var overlay=document.getElementById('help-overlay'), open=document.getElementById('help-open'), close=document.getElementById('help-close'), previousOverflow='';
+function showHelp(){previousOverflow=document.body.style.overflow;overlay.hidden=false;document.body.style.overflow='hidden';open.setAttribute('aria-expanded','true');document.getElementById('help-card').focus();}
+function closeHelp(){overlay.hidden=true;document.body.style.overflow=previousOverflow;open.setAttribute('aria-expanded','false');open.focus();}
+open.addEventListener('click',showHelp);close.addEventListener('click',closeHelp);
+overlay.addEventListener('click',function(e){if(e.target===overlay)closeHelp();});
+document.addEventListener('keydown',function(e){if(!overlay.hidden&&e.key==='Escape'){e.preventDefault();closeHelp();}else if(!overlay.hidden&&e.key==='Tab'){e.preventDefault();close.focus();}});
+for(var i=1;i<=3;i++){(function(field){var key='aegypten-ewiges-leben-'+field.id;try{field.value=sessionStorage.getItem(key)||'';}catch(e){}field.addEventListener('input',function(){try{sessionStorage.setItem(key,field.value);}catch(e){}});})(document.getElementById('answer-'+i));}
+})();
+</script></body></html>
