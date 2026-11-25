@@ -102,6 +102,7 @@ def dialog(page,selector):
         e.style.setProperty('max-height','none','important');
         e.style.setProperty('overflow','visible','important');
         const parent=e.parentElement;
+        parent.hidden=false;parent.classList.remove('hidden');
         parent.style.setProperty('position','absolute','important');
         parent.style.setProperty('align-items','start','important');
         parent.style.setProperty('overflow','visible','important');
