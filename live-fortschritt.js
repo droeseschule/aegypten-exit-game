@@ -1,0 +1,22 @@
+(function(){
+'use strict';
+const base='https://zitmvcoiqbtqahkjvkcv.supabase.co', key='sb_publishable_rdFAH2iUdkSbZZlbE3K9-w_5sujr5f9', storage='egypt-live-v1';
+const file=location.pathname.split('/').pop()||'index.html', params=new URLSearchParams(location.search);
+const valid=c=>/^[0-9a-f]{32}$/.test(c||'');
+let state=null;try{state=JSON.parse(sessionStorage.getItem(storage)||'null')}catch(e){}
+const code=params.get('s');
+if(valid(code)&&(!state||state.code!==code)){state={code,token:crypto.randomUUID(),joined:false};try{sessionStorage.setItem(storage,JSON.stringify(state))}catch(e){}}
+if(params.has('s')){params.delete('s');history.replaceState(null,'',location.pathname+(params.size?'?'+params.toString():'')+location.hash)}
+if(!state||!valid(state.code))return;
+const banner=document.createElement('div');banner.setAttribute('role','status');banner.style.cssText='padding:8px 14px;background:#fff2cf;color:#50371d;text-align:center;font:14px system-ui';document.body.prepend(banner);
+const say=s=>banner.textContent=s;
+const rpc=async(name,data)=>{const r=await fetch(base+'/rest/v1/rpc/'+name,{method:'POST',headers:{apikey:key,'Content-Type':'application/json'},body:JSON.stringify(data),cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);return await r.json()};
+const maps={'index.html':{start:0,help:1,video:2,puzzle:3,question:4,symbol:5,door:6},'station2.html':{info:7,memory:8,cloze:9,glyph:10,door:11},'station3.html':{intro:12,info:13,sort:14,sentence:15,glyph:16,door:17},'station4.html':{intro:18,explore:19,match:20,ammit:21,glyph:22,door:23},'ausklang.html':{outro1:24,outro2:25}};
+function step(){if(file==='ewiges-leben.html'){try{const r=JSON.parse(sessionStorage.getItem('aegypten-worksheet-receipt-v1')||'null');return r&&r.mode==='local'?27:26}catch(e){return 26}}if(file==='bonus.html'){const v=document.getElementById('victory');return v&&!v.classList.contains('hidden')?29:28}const screen=document.querySelector('.screen:not(.hidden):not([aria-hidden="true"])');return screen?maps[file]?.[screen.id.replace('screen-','')]??0:0}
+let busy=false,last=-1,lastAt=0;
+async function report(force=false){if(!state.joined||busy)return;const current=step();if(!force&&current===last&&Date.now()-lastAt<20000)return;busy=true;try{const ok=await rpc('egypt_report',{p_code:state.code,p_token:state.token,p_step:current});if(!ok){say('Live-Sitzung beendet oder nicht verfügbar. Du kannst weiterspielen.');return}last=current;lastAt=Date.now();say('Live-Fortschritt verbunden · Nur Kürzel und Bearbeitungsstand werden übertragen.')}catch(e){say('Live-Verbindung unterbrochen. Das Spiel funktioniert weiter.')}finally{busy=false}}
+if(file==='index.html'&&!state.joined){const field=document.getElementById('start-student-name');const btn=document.querySelector('#screen-start button.btn-primary');if(field&&btn){field.maxLength=32;field.autocomplete='off';field.placeholder='Dein vereinbartes Kürzel';const label=document.querySelector('label[for="start-student-name"]');if(label)label.textContent='Dein vereinbartes Kürzel (kein vollständiger Name)';say('Unterrichtssitzung: Verwende nur dein vereinbartes Kürzel. Dein Fortschritt wird der Lehrkraft angezeigt.');let pass=false,joining=false;btn.addEventListener('click',async e=>{if(pass)return;e.preventDefault();e.stopImmediatePropagation();if(joining)return;const alias=field.value.trim();if(!alias)return;joining=true;try{const ok=await rpc('egypt_join',{p_code:state.code,p_token:state.token,p_alias:alias});if(!ok)throw Error('Sitzung ungültig');state.joined=true;sessionStorage.setItem(storage,JSON.stringify(state));pass=true;btn.click();pass=false;report(true)}catch(e){say('Beitritt fehlgeschlagen. Bitte prüfe den Sitzungslink oder frage deine Lehrkraft.')}finally{joining=false}},true)}else say('Live-Anmeldung nicht verfügbar. Bitte starte über den Sitzungslink.')}
+else if(state.joined)report(true);else say('Bitte öffne den Sitzungslink auf der Startseite.');
+let scheduled=false;new MutationObserver(()=>{if(scheduled)return;scheduled=true;setTimeout(()=>{scheduled=false;report()},150)}).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class','aria-hidden']});
+setInterval(()=>report(),3000);window.addEventListener('pageshow',()=>report(true));
+})();
