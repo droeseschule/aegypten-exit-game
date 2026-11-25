@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><title>Ägypten · Ende der Forschungsreise</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;background:#21170e;color:#ffe5af;font:700 22px system-ui,sans-serif}
+main{min-height:100vh;min-height:100dvh;display:grid;place-items:center;text-align:center;position:relative}
+[hidden]{display:none!important}h1{font-size:clamp(28px,6vw,64px);margin:0;padding:24px;text-shadow:0 3px 12px #000}
+#scene{width:100%;height:100vh;height:100dvh;object-fit:contain;display:block;background:#21170e}
+#controls{position:fixed;bottom:max(18px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;padding:12px;z-index:1}
+#retry{font:700 18px system-ui;min-height:52px;border-radius:14px;border:2px solid #965b17;padding:12px 22px;background:#ffe0a1;color:#4b2a10;cursor:pointer;touch-action:manipulation}
+#notice{font-size:15px;background:#21170e;padding:8px;margin:4px auto;width:fit-content;border-radius:8px}
+#finish p{font-weight:400;font-size:clamp(17px,3vw,24px);padding:12px;margin:0}
+</style></head><body><main>
+<h1 id="warning">Die Zeit wird knapp...</h1>
+<img id="scene" alt="" hidden>
+<div id="controls" hidden><p id="notice" role="status"></p><button type="button" id="retry">Stimme anhören</button></div>
+<section id="finish" hidden><h1>Deine Forschungsreise endet hier.</h1><p>Du kannst die App nun schließen.</p></section>
+<audio id="voice" preload="auto"></audio>
+</main><script>
+(function(){
+'use strict';
+const KEY='aegypten-time-limit-v1', $=id=>document.getElementById(id);
+const warning=$('warning'), scene=$('scene'), voice=$('voice'), controls=$('controls'), retry=$('retry'), notice=$('notice'), final=$('finish');
+const descriptions=['Der Junge steht besorgt vor dem Steinhaufen.','Der Junge entdeckt den geheimen Tunnel.','Der Junge steht wieder im Freien vor der Grabkammer.'];
+let state=null,index=0,finished=false,pending=null,mode='audio';
+try{state=JSON.parse(sessionStorage.getItem(KEY)||'null')}catch(e){}
+function stop(){clearTimeout(pending);voice.pause();voice.removeAttribute('src');voice.load()}
+function complete(){
+  finished=true;stop();warning.hidden=true;scene.hidden=true;controls.hidden=true;final.hidden=false;
+  if(state&&state.phase==='expired'){state.phase='ended';try{sessionStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+  // Normal Safari tabs cannot be closed by script. This final screen is always available.
+  if(window.opener){try{window.close()}catch(e){}}
+}
+function showRetry(text,kind){mode=kind;notice.textContent=text;retry.textContent=kind==='image'?'Bild erneut laden':'Stimme anhören';controls.hidden=false}
+function play(){
+  if(finished)return;
+  controls.hidden=true;
+  try{const p=voice.play();if(p&&p.catch)p.catch(e=>{if(!finished)showRetry(e.name==='NotAllowedError'?'Tippe hier, um die Stimme abzuspielen.':'Die Aufnahme konnte nicht abgespielt werden. Bitte versuche es erneut.','audio')})}
+  catch(e){showRetry('Bitte tippe, um die Stimme abzuspielen.','audio')}
+}
+function show(n){
+  if(finished)return;
+  clearTimeout(pending);index=n;controls.hidden=true;warning.hidden=true;
+  voice.pause();voice.src='zeitende-audio'+n+'.mp3';voice.load();
+  scene.hidden=true;scene.alt=descriptions[n-1];
+  scene.onload=()=>{if(finished||index!==n)return;scene.hidden=false;pending=setTimeout(play,2000)};
+  scene.onerror=()=>{if(!finished)showRetry('Das Bild konnte nicht geladen werden. Bitte prüfe die Verbindung.','image')};
+  scene.src='zeitende-bild'+n+'.webp';
+}
+voice.addEventListener('ended',()=>{if(finished)return;if(index===3)complete();else pending=setTimeout(()=>show(index+1),1000)});
+voice.addEventListener('error',()=>{if(!finished&&index)showRetry('Die Audiodatei konnte nicht geladen werden. Bitte versuche es erneut.','audio')});
+retry.addEventListener('click',()=>{if(mode==='image'){show(index);return}if(voice.error){voice.load()}play()});
+if(!state||state.phase==='ended'||state.phase!=='expired'){complete();return}
+[1,2,3].forEach(n=>{const image=new Image();image.src='zeitende-bild'+n+'.webp'});
+pending=setTimeout(()=>show(1),3000);
+})();
+</script></body></html>

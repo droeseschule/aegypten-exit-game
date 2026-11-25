@@ -80,7 +80,7 @@
       } catch (_) { /* Storage may be disabled. */ }
       window.location.reload();
     } else if (element.tagName === 'A') {
-      try { ['aegypten-worksheet-receipt-v1','aegypten-worksheet-name-v1','aegypten-worksheet-first-name-v2','aegypten-ewiges-leben-answer-1','aegypten-ewiges-leben-answer-2','aegypten-ewiges-leben-answer-3'].forEach(function(key){sessionStorage.removeItem(key);}); } catch (_) {}
+      try { ['aegypten-worksheet-receipt-v1','aegypten-worksheet-name-v1','aegypten-worksheet-first-name-v2','aegypten-ewiges-leben-answer-1','aegypten-ewiges-leben-answer-2','aegypten-ewiges-leben-answer-3'].forEach(function(key){sessionStorage.removeItem(key);}); sessionStorage.removeItem('aegypten-time-limit-v1'); } catch (_) {}
       window.location.assign(element.href);
     } else {
       // Let the existing station-specific restart logic run unchanged.
@@ -100,6 +100,93 @@
     overlay.hidden = false;
     no.focus();
   }, true);
+})();
+
+
+/* Hidden per-tab lesson time limit. Enabled only when all ending assets are published. */
+(function(){
+  'use strict';
+  const KEY='aegypten-time-limit-v1', LIMIT=35*60*1000;
+  const page=location.pathname.split('/').pop()||'index.html';
+  if(!['index.html','station2.html','station3.html','station4.html','ausklang.html','bonus.html'].includes(page))return;
+  const get=()=>{try{return JSON.parse(sessionStorage.getItem(KEY)||'null')}catch(e){return null}};
+  const put=s=>{try{sessionStorage.setItem(KEY,JSON.stringify(s));return true}catch(e){return false}};
+  const scope=()=>{
+    try{
+      const p=new URLSearchParams(location.search), h=new URLSearchParams(location.hash.slice(1));
+      const code=h.get('s')||p.get('s')||(JSON.parse(sessionStorage.getItem('egypt-live-v1')||'null')||{}).code;
+      return /^[0-9a-f]{32}$/.test(code||'')?code:'solo';
+    }catch(e){return 'solo'}
+  };
+  const runScope=scope();
+  let state=get();
+  if(state&&state.scope!==runScope){try{sessionStorage.removeItem(KEY)}catch(e){}state=null}
+  let pendingStart=0, availability=null, navigating=false;
+  const active=id=>{const el=document.getElementById(id);return !!el&&!el.classList.contains('hidden')&&el.getAttribute('aria-hidden')!=='true'};
+  function finish(){
+    if(!state||state.phase!=='running')return;
+    state.phase='complete';put(state);
+  }
+  function expire(){
+    if(navigating)return;
+    if(state.phase==='running'){state.phase='expired';if(!put(state))return}
+    navigating=true;
+    document.querySelectorAll('audio,video').forEach(a=>{try{a.pause()}catch(e){}});
+    location.replace(new URL('zeitende.html',location.href).href);
+  }
+  function check(){
+    if(navigating)return;
+    // An accepted start changes the visible screen; failed name validation or join does not start the clock.
+    if(page==='index.html'&&pendingStart&&active('screen-help')&&!state){
+      state={scope:runScope,deadline:pendingStart+LIMIT,phase:'running',enabled:availability};
+      if(!put(state)){state=null;pendingStart=0;return}
+      pendingStart=0;
+    }
+    if(!state)return;
+    if(state.phase==='expired'||state.phase==='ended'){expire();return}
+    if(state.phase!=='running')return;
+    // The final door animation has genuinely completed (not merely the matching exercise).
+    if(page==='ausklang.html'||page==='bonus.html'||(page==='station4.html'&&active('screen-door')&&active('door4-complete'))){
+      if(Date.now()<=state.deadline||page==='ausklang.html'||page==='bonus.html'){finish();return}
+    }
+    if(state.enabled===null&&availability!==null){state.enabled=availability;put(state)}
+    if(state.enabled===true&&Date.now()>=state.deadline)expire();
+  }
+  if(page==='index.html'){
+    const button=document.getElementById('start-button');
+    if(button)document.addEventListener('click',e=>{
+      if(!button.contains(e.target)||button.disabled||!active('screen-start')||state)return;
+      const input=document.getElementById('start-student-name');
+      if(!input||!input.value.trim())return;
+      // The live join handler may replay the click programmatically after the RPC.
+      if(e.isTrusted||!pendingStart)pendingStart=Date.now();
+    },true);
+  }
+  // Keep the old game usable if media have not yet been uploaded. HEAD requests do not download media.
+  async function assetsReady(){
+    try{
+      const response=await fetch('zeitende-medien.json',{cache:'no-store'});
+      if(!response.ok)return false;
+      const manifest=await response.json();
+      if(manifest.version!==1||manifest.ready!==true)return false;
+      const expected=[1,2,3].flatMap(i=>['zeitende-bild'+i+'.webp','zeitende-audio'+i+'.mp3']);
+      const files=await Promise.all(expected.map(f=>fetch(f,{method:'HEAD',cache:'no-store'})));
+      return files.every(r=>r.ok);
+    }catch(e){return false}
+  }
+  if(!state||state.enabled===null)assetsReady().then(ok=>{availability=ok;check()});
+  else availability=state.enabled;
+  new MutationObserver(check).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class','aria-hidden']});
+  setInterval(check,500);
+  window.addEventListener('pageshow',()=>{
+    // Re-read the state after BFCache navigation.
+    const saved=get();
+    if(saved&&saved.scope===runScope)state=saved;
+    else if(!saved)state=null;
+    navigating=false;check();
+  });
+  document.addEventListener('visibilitychange',check);
+  check();
 })();
 
 ;(function(){var s=document.createElement('script');s.src='live-fortschritt.js?v=1';document.body.appendChild(s)})();
