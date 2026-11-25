@@ -19,6 +19,7 @@ main{min-height:100vh;min-height:100dvh;display:grid;place-items:center;text-ali
 (function(){
 'use strict';
 const KEY='aegypten-time-limit-v1', $=id=>document.getElementById(id);
+const preview=new URLSearchParams(location.search).get('vorschau')==='1';
 const warning=$('warning'), scene=$('scene'), voice=$('voice'), controls=$('controls'), retry=$('retry'), notice=$('notice'), final=$('finish');
 const descriptions=['Der Junge steht besorgt vor dem Steinhaufen.','Der Junge entdeckt den geheimen Tunnel.','Der Junge steht wieder im Freien vor der Grabkammer.'];
 let state=null,index=0,finished=false,pending=null,mode='audio';
@@ -26,9 +27,9 @@ try{state=JSON.parse(sessionStorage.getItem(KEY)||'null')}catch(e){}
 function stop(){clearTimeout(pending);voice.pause();voice.removeAttribute('src');voice.load()}
 function complete(){
   finished=true;stop();warning.hidden=true;scene.hidden=true;controls.hidden=true;final.hidden=false;
-  if(state&&state.phase==='expired'){state.phase='ended';try{sessionStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+  if(!preview&&state&&state.phase==='expired'){state.phase='ended';try{sessionStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
   // Normal Safari tabs cannot be closed by script. This final screen is always available.
-  if(window.opener){try{window.close()}catch(e){}}
+  if(!preview&&window.opener){try{window.close()}catch(e){}}
 }
 function showRetry(text,kind){mode=kind;notice.textContent=text;retry.textContent=kind==='image'?'Bild erneut laden':'Stimme anhören';controls.hidden=false}
 function play(){
@@ -49,7 +50,7 @@ function show(n){
 voice.addEventListener('ended',()=>{if(finished)return;if(index===3)complete();else pending=setTimeout(()=>show(index+1),1000)});
 voice.addEventListener('error',()=>{if(!finished&&index)showRetry('Die Audiodatei konnte nicht geladen werden. Bitte versuche es erneut.','audio')});
 retry.addEventListener('click',()=>{if(mode==='image'){show(index);return}if(voice.error){voice.load()}play()});
-if(!state||state.phase==='ended'||state.phase!=='expired'){complete();return}
+if(!preview&&(!state||state.phase!=='expired')){complete();return}
 [1,2,3].forEach(n=>{const image=new Image();image.src='zeitende-bild'+n+'.webp'});
 pending=setTimeout(()=>show(1),3000);
 })();
