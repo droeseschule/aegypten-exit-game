@@ -122,6 +122,10 @@
   let state=get();
   if(state&&state.scope!==runScope){try{sessionStorage.removeItem(KEY)}catch(e){}state=null}
   let pendingStart=0, availability=null, navigating=false;
+  let duration=35, settingsReady=runScope==='solo', lastSettingsAt=0;
+  function validMinutes(v){return Number.isInteger(v)&&v>=1&&v<=120}
+  function applySettings(v){if(!validMinutes(v))return;duration=v;settingsReady=true;lastSettingsAt=Date.now();if(state&&state.phase==='running'){state.startedAt=state.startedAt||state.deadline-LIMIT;state.deadline=state.startedAt+duration*60000;state.minutes=duration;put(state)}check()}
+  window.addEventListener('egypt-timer-setting',e=>applySettings(e.detail));
   const active=id=>{const el=document.getElementById(id);return !!el&&!el.classList.contains('hidden')&&el.getAttribute('aria-hidden')!=='true'};
   function finish(){
     if(!state||state.phase!=='running')return;
@@ -138,7 +142,7 @@
     if(navigating)return;
     // An accepted start changes the visible screen; failed name validation or join does not start the clock.
     if(page==='index.html'&&pendingStart&&active('screen-help')&&!state){
-      state={scope:runScope,deadline:pendingStart+LIMIT,phase:'running',enabled:availability};
+      state={scope:runScope,startedAt:pendingStart,deadline:pendingStart+duration*60000,minutes:duration,phase:'running',enabled:availability};
       if(!put(state)){state=null;pendingStart=0;return}
       pendingStart=0;
     }
@@ -150,7 +154,11 @@
       if(Date.now()<=state.deadline||page==='ausklang.html'||page==='bonus.html'){finish();return}
     }
     if(state.enabled===null&&availability!==null){state.enabled=availability;put(state)}
-    if(state.enabled===true&&Date.now()>=state.deadline)expire();
+    if(state.enabled===true&&Date.now()>=state.deadline){
+      // Ask for the latest teacher setting just before expiry. If offline, use the last known deadline after a short grace period.
+      if(runScope!=='solo'&&Date.now()-lastSettingsAt>12000){window.dispatchEvent(new Event('egypt-timer-refresh'));if(Date.now()-state.deadline<15000)return}
+      expire();
+    }
   }
   if(page==='index.html'){
     const button=document.getElementById('start-button');
@@ -174,6 +182,7 @@
       return files.every(r=>r.ok);
     }catch(e){return false}
   }
+  if(state&&state.phase==='running'){state.startedAt=state.startedAt||state.deadline-LIMIT;duration=validMinutes(state.minutes)?state.minutes:35;put(state)}
   if(!state||state.enabled===null)assetsReady().then(ok=>{availability=ok;check()});
   else availability=state.enabled;
   new MutationObserver(check).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class','aria-hidden']});
@@ -189,4 +198,4 @@
   check();
 })();
 
-;(function(){var s=document.createElement('script');s.src='live-fortschritt.js?v=1';document.body.appendChild(s)})();
+;(function(){var s=document.createElement('script');s.src='live-fortschritt.js?v=2';document.body.appendChild(s)})();
