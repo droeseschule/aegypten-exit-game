@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "ready": true,
+  "images": [
+    "zeitende-bild1.webp",
+    "zeitende-bild2.webp",
+    "zeitende-bild3.webp"
+  ],
+  "audio": [
+    "zeitende-audio1.mp3",
+    "zeitende-audio2.mp3",
+    "zeitende-audio3.mp3"
+  ]
+}
