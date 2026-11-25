@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/export-app-pdf.yml'
       - 'tools/export_app_pdf.py'
+      - 'tools/export_teacher_pdf.py'
   workflow_dispatch:
 permissions:
   contents: write
@@ -24,14 +25,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install playwright pillow reportlab
           python -m playwright install --with-deps chromium
+      - name: Generate PDF of teacher dashboard
+        run: python tools/export_teacher_pdf.py
       - name: Generate PDF of every in-game screen
         run: python tools/export_app_pdf.py
-      - name: Publish downloadable PDF
+      - name: Publish downloadable PDFs
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add downloads/Aegypten-Exit-Game_Alle-Seiten.pdf
+          git add downloads/*.pdf
+          git restore --staged -- 'downloads/*.tmp.pdf' 2>/dev/null || true
           if ! git diff --cached --quiet; then
             git commit -m "Publish PDF export of all Egypt Exit Game screens"
+            git pull --rebase origin main
             git push
           fi

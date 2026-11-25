@@ -132,6 +132,7 @@ def main():
         with sync_playwright() as p:
             browser=p.chromium.launch(args=['--no-sandbox','--disable-dev-shm-usage'],headless=True)
             context=browser.new_context(viewport={'width':1280,'height':850},device_scale_factor=1,reduced_motion='reduce')
+            context.add_init_script("localStorage.setItem('egypt-exit-mumification-video-complete-v1','1')")
             # The export uses no live session and cannot send pupil data.
             context.route('https://**/*supabase.co/**',lambda route:route.abort())
             context.route('https://raw.githubusercontent.com/**',lambda route:route.abort())
@@ -147,6 +148,8 @@ def main():
                         png=shot(page,'main.wrap')
                     else:
                         selector=('#'+state) if filename=='bonus.html' else ('#screen-'+state)
+                        if filename=='index.html' and state=='puzzle':
+                            page.evaluate("document.getElementById('video-next').click()")
                         select_screen(page,selector)
                         # All screens are initialized by their original JS; verify dynamic task content.
                         checks={'puzzle':'#steps > *','memory':'#memory-board .memory-card','sentence':'#sentence-pieces .sentence-piece','match':'#match-pool .s4-card','game':'#crossword > *'}
