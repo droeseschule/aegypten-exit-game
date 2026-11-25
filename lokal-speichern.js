@@ -39,3 +39,4 @@ window.addEventListener('pageshow',()=>{if(saved())message(savedMessage(),'succe
 if(saved())message(savedMessage(),'success');
 update();
 })();
+;(function(){var s=document.createElement('script');s.src='live-fortschritt.js?v=1';document.body.appendChild(s)})();
