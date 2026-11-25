@@ -133,6 +133,8 @@ def main():
             browser=p.chromium.launch(args=['--no-sandbox','--disable-dev-shm-usage'],headless=True)
             context=browser.new_context(viewport={'width':1280,'height':850},device_scale_factor=1,reduced_motion='reduce')
             context.add_init_script("localStorage.setItem('egypt-exit-mumification-video-complete-v1','1')")
+            # Bonus screen normally requires a locally saved worksheet. Seed a fictitious receipt only in the export browser.
+            context.add_init_script("sessionStorage.setItem('aegypten-worksheet-receipt-v1',JSON.stringify({id:'pdf-preview',snapshot:{},mode:'local'}))")
             # The export uses no live session and cannot send pupil data.
             context.route('https://**/*supabase.co/**',lambda route:route.abort())
             context.route('https://raw.githubusercontent.com/**',lambda route:route.abort())
