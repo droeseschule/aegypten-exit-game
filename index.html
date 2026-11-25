@@ -130,7 +130,8 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
  <div class="body">
   <p class="stage">Die geheimnisvolle Grabkammer</p><h1>Kannst du das Rätsel lösen?</h1>
   <p class="lead">Die Tür ist verschlossen. Ein junger Forscher hat überall geheimnisvolle Steintafeln entdeckt. Er bittet dich, ihm bei der Suche nach dem ersten Symbol zu helfen.</p>
-  <div class="actions"><button type="button" id="start-button" class="btn btn-primary">Ich bin bereit! <span aria-hidden="true">➜</span></button></div>
+  <div style="max-width:420px;margin:20px auto 8px;text-align:left"><label for="start-student-name" style="display:block;font-weight:800;margin-bottom:8px">Wie heißt du? Trage deinen Vornamen ein:</label><input id="start-student-name" type="text" autocomplete="given-name" maxlength="80" required placeholder="Dein Vorname" style="box-sizing:border-box;width:100%;padding:12px 14px;border:2px solid #b9813f;border-radius:12px;background:#fffaf0;color:#513719;font:inherit;font-size:18px"><p id="start-name-status" role="status" style="font-size:14px;margin:6px 0"></p></div>
+  <div class="actions"><button type="button" id="start-button" class="btn btn-primary" disabled style="opacity:.5;cursor:not-allowed">Ich bin bereit! <span aria-hidden="true">➜</span></button></div>
  </div>
 </section>
 
@@ -255,7 +256,13 @@ for(const [stage,previous] of Object.entries(backTargets)){
  }else actions=area.querySelector('.actions');
  actions.prepend(button);
 }
-$('start-button').addEventListener('click',()=>show('help'));
+const startName=$('start-student-name'), startButton=$('start-button'), startNameKey='aegypten-worksheet-first-name-v2';
+try{startName.value=sessionStorage.getItem(startNameKey)||''}catch(e){}
+function updateStartName(){const valid=!!startName.value.trim();startButton.disabled=!valid;startButton.style.opacity=valid?'':'0.5';startButton.style.cursor=valid?'':'not-allowed'}
+startName.addEventListener('input',updateStartName);
+startName.addEventListener('keydown',e=>{if(e.key==='Enter'&&!startButton.disabled){e.preventDefault();startButton.click()}});
+startButton.addEventListener('click',()=>{const name=startName.value.trim();if(!name){updateStartName();return}try{if(sessionStorage.getItem(startNameKey)!==name)sessionStorage.removeItem('aegypten-worksheet-receipt-v1');sessionStorage.setItem(startNameKey,name)}catch(e){$('start-name-status').textContent='Dein Name konnte nicht gespeichert werden. Bitte erlaube die lokale Speicherung im Browser.';return}show('help')});
+updateStartName();
 $('help-next').addEventListener('click',()=>show('video'));
 
 // Pupils must actually reach the end of the supplied video before the sorting step unlocks.
