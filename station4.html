@@ -172,6 +172,9 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 .s4-hotspot{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);width:clamp(34px,4.8vw,56px);height:clamp(34px,4.8vw,56px);border-radius:50%;border:3px solid #fff4bc;box-shadow:0 2px 0 #60360c,0 2px 12px #160c0c88;background:#135c8ecc;color:white;display:grid;place-items:center;font-size:clamp(16px,2vw,24px);font-weight:1000;z-index:2;touch-action:manipulation}
 .s4-hotspot:focus-visible,.s4-hotspot.active{background:#f3c95d;color:#35200e;border-color:#fff1af;outline:3px solid #1484bf}
 .s4-hotspot.assigned{background:#328458d9;border-color:#d5ffde}
+.s4-hotspot.listened{background:#287d58;color:white;border-color:#d5ffde}
+.s4-hotspot.listened::after{content:"✓";position:absolute;right:-5px;bottom:-5px;border-radius:50%;background:#287d58;color:white;border:2px solid white;font-size:12px;width:18px;height:18px;display:grid;place-items:center}
+#go-match:disabled{opacity:.48;cursor:not-allowed;box-shadow:none}
 .s4-hotspot.drag-over{background:#f3bc40;border-color:white;transform:translate(-50%,-50%) scale(1.15)}
 .s4-dropdown{margin:17px auto;max-width:960px;padding:16px 20px;background:#fffdf2;border:2px solid #c3914f;border-radius:13px;line-height:1.65}
 .s4-dropdown h3{margin-top:0}
@@ -244,8 +247,9 @@ video{display:block;width:100%;height:auto;max-height:58vh;background:#211912;bo
 <button type="button" class="s4-hotspot" data-point="4" style="--x:61.5%;--y:63.1%" aria-label="Erklärung zu Nummer 4 öffnen" aria-expanded="false">4</button>
 <button type="button" class="s4-hotspot" data-point="5" style="--x:87.2%;--y:50.2%" aria-label="Erklärung zu Nummer 5 öffnen" aria-expanded="false">5</button></div>
 <div id="explore-panel" class="s4-dropdown hidden" aria-live="polite"></div>
+<p id="explore-progress" role="status" aria-live="polite" style="text-align:center;font-weight:800;margin:12px auto">0 von 5 Erklärungen vollständig angehört. Tippe auf alle Zahlen und höre dir die Erklärungen bis zum Ende an.</p>
 <div id="explore-audio-status" class="s4-status" role="status">Die Erklärung zur Darstellung beginnt nach zwei Sekunden. Wähle anschließend eine Zahl.</div>
-<div class="actions"><button type="button" data-back="intro" class="btn btn-light">← Zurück</button><button type="button" id="replay-audio2" class="btn btn-blue">🔊 Einführung nochmal anhören</button><button type="button" id="go-match" class="btn btn-primary">Weiter zur Zuordnung ➜</button></div>
+<div class="actions"><button type="button" data-back="intro" class="btn btn-light">← Zurück</button><button type="button" id="replay-audio2" class="btn btn-blue">🔊 Einführung nochmal anhören</button><button type="button" id="go-match" class="btn btn-primary" disabled>Weiter zur Zuordnung ➜</button></div>
 </div></section>
 
 <section class="screen hidden" id="screen-match"><div class="body">
@@ -380,7 +384,7 @@ function show(which){
  clearTimers();stopAudio();names.forEach(function(id){var screen=$('screen-'+id);screen.classList.toggle('hidden',id!==which);screen.setAttribute('aria-hidden',String(id!==which))});
  active=which;window.scrollTo(0,0);
  if(which==='intro'){ $('audio-intro-status').textContent='Die Stimme startet nach etwa zwei Sekunden. Falls der Ton blockiert wird, tippe auf den Abspielbutton.';scheduleAudio(1,2000,'audio-intro-status')}
- if(which==='explore'){scheduleAudio(2,2000,'explore-audio-status')}
+ if(which==='explore'){updateExploreProgress();scheduleAudio(2,2000,'explore-audio-status')}
  if(which==='match'){renderMatch()}
  if(which==='ammit'){$('ammit-audio-status').textContent='Die Stimme beginnt nach einer Sekunde.';scheduleAudio(8,1000,'ammit-audio-status')}
 }
@@ -398,9 +402,23 @@ var facts={
  4:{title:'Gott Anubis',text:'Direkt an der Waage sitzt der Gott Anubis. Man erkennt ihn gut an seinem Kopf, der aussieht wie der eines Schakals. Er verkündet die Entscheidung.'},
  5:{title:'Gott Osiris',text:'Ganz rechts auf der Abbildung sitzt der Gott Osiris. Er ist bei den Ägyptern der Gott des Jenseits und des Totengerichts sowie Richter über die Unterwelt und die Seelen der Verstorbenen. Er entscheidet am Ende, ob die Seelen der Toten den Test bestanden haben.'}
 };
-var currentFact=null;
+var currentFact=null, listenedFacts=new Set(), clickedFacts=new Set();
+function updateExploreProgress(){
+ var count=listenedFacts.size,ready=count===5;
+ $('go-match').disabled=!ready;
+ $('explore-progress').textContent=ready?'✓ Alle 5 Erklärungen vollständig angehört. Du kannst jetzt zur Zuordnung weitergehen.':count+' von 5 Erklärungen vollständig angehört. Tippe auf alle Zahlen und höre dir die Erklärungen bis zum Ende an.';
+ document.querySelectorAll('#screen-explore [data-point]').forEach(function(b){var n=Number(b.dataset.point),done=listenedFacts.has(n);b.classList.toggle('listened',done);b.setAttribute('aria-label','Erklärung zu Nummer '+n+(done?' – vollständig angehört':' öffnen'))});
+}
+for(var factNumber=1;factNumber<=5;factNumber++){
+ (function(n){var a=$('audio'+(n+2));a.addEventListener('ended',function(){
+ if(active!=='explore'||currentAudio!==a||currentFact!==n||!clickedFacts.has(n))return;
+ listenedFacts.add(n);updateExploreProgress();
+ $('explore-audio-status').textContent='✓ Erklärung zu Nummer '+n+' vollständig angehört.';
+ })})(factNumber);
+}
+updateExploreProgress();
 document.querySelectorAll('[data-point]').forEach(function(btn){btn.addEventListener('click',function(){
- var n=Number(btn.dataset.point);if(stageTimer)clearTimeout(stageTimer);stopAudio();
+ var n=Number(btn.dataset.point);clickedFacts.add(n);if(stageTimer){clearTimeout(stageTimer);stageTimer=null}stopAudio();
  if(currentFact===n&&!$('explore-panel').classList.contains('hidden')){$('explore-panel').classList.add('hidden');currentFact=null;document.querySelectorAll('[data-point]').forEach(function(b){b.classList.remove('active');b.setAttribute('aria-expanded','false')});return}
  currentFact=n;document.querySelectorAll('[data-point]').forEach(function(b){var active=Number(b.dataset.point)===n;b.classList.toggle('active',active);b.setAttribute('aria-expanded',String(active))});
  var panel=$('explore-panel');panel.classList.remove('hidden');panel.innerHTML='<h3>'+n+'. '+facts[n].title+'</h3><p>'+facts[n].text+'</p><button type="button" class="btn btn-blue" id="replay-fact">🔊 Erklärung nochmal anhören</button>';
@@ -408,7 +426,7 @@ document.querySelectorAll('[data-point]').forEach(function(btn){btn.addEventList
  $('explore-audio-status').textContent='Die Erklärung zu Nummer '+n+' beginnt nach einer Sekunde.';
  scheduleAudio(n+2,1000,'explore-audio-status');
 })});
-$('go-match').addEventListener('click',function(){show('match')});
+$('go-match').addEventListener('click',function(){if(listenedFacts.size===5)show('match')});
 var titles=['Göttin Isis','Die Verstorbene','Die Waage','Gott Anubis','Gott Osiris'];
 var bullets=[
  ['Göttin der Magie, Geburt und Wiedergeburt','Schutzgöttin der Toten','Begleitet die Verstorbene zum Totengericht'],
@@ -484,7 +502,7 @@ function animateDoor(){
  },3150));
 }
 $('go-door').addEventListener('click',function(){show('door');animateDoor()});
-$('replay-station4').addEventListener('click',function(){startMatch();currentFact=null;$('explore-panel').classList.add('hidden');$('show-info').textContent='📜 Infotext anzeigen';$('show-info').setAttribute('aria-expanded','false');$('info-panel').classList.add('hidden');show('intro')});
+$('replay-station4').addEventListener('click',function(){startMatch();currentFact=null;listenedFacts.clear();clickedFacts.clear();document.querySelectorAll('#screen-explore [data-point]').forEach(function(b){b.classList.remove('active');b.setAttribute('aria-expanded','false')});updateExploreProgress();$('explore-panel').classList.add('hidden');$('show-info').textContent='📜 Infotext anzeigen';$('show-info').setAttribute('aria-expanded','false');$('info-panel').classList.add('hidden');show('intro')});
 startMatch();show('intro');
 })();
 </script><script src="glossar.js?v=1" defer data-glossar-station="4"></script>
